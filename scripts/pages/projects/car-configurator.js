@@ -84,6 +84,17 @@ div.querySelector(".btn-home").addEventListener("click", () => {
 <p>
 The router listens for <strong>hashchange</strong> and renders the matching page. Components never call page functions directly. <strong>In V1/V2, buttons call functions. In CarKonfigurator, buttons change the URL.</strong>
 </p>
+
+<h4>Let the Router Do Its Job</h4>
+
+<p>
+When navigating between routes, buttons should only update the hash — never call a module's render function directly.
+</p>
+<br>
+<p>
+<strong>Why:</strong> Updating location.hash triggers the hashchange event, which the central router listens to. The router then determines which module to render. Calling a render function directly breaks this flow — the URL doesn't update, browser back/forward navigation fails, and the single point of entry is lost. The router is the gatekeeper; all navigation must go through it.
+</p>
+
 <br><br>
 
 <h4>So in CarKonfigurator, navigation works in two layers:</h4>
@@ -638,8 +649,10 @@ Step N+1  ←  receives formatted options  ←  renders UI</code></pre>
 
 <hr>
 
+
 <p>
-<em>See the full working code on <a href="https://github.com/falconstoop" target="_blank" rel="noopener noreferrer">GitHub →</a></em>
+<em>See the full working code on <a class="accent-link" href="https://github.com/falconstoop/bmw-configurator" target="_blank" rel="noopener noreferrer">GitHub → BMW Configurator</a></em>
+
 </p>
 
 
