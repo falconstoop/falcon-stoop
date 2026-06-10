@@ -388,6 +388,24 @@ body {
   object-fit: contain;
 }
 
+.img-container {
+  display: flex;
+  max-height: 600px;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+
+  .content-img {
+    display: inline-block;
+    min-width: 280px;
+    flex: 1;
+    height: auto;
+    border-radius: 8px;
+    object-fit: contain;
+  }
+}
+
 hr {
   border: none;
   height: 2px;

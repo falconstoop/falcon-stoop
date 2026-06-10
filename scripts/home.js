@@ -193,10 +193,9 @@ const home = () => {
   <h2>IndexedDB</h2>
   <br>
   <p>
-  idb & 
+    The idb wrapper
   <br>
-    
-  
+  Transactions, versioning and indexes.
   </p>
   </a>
 
