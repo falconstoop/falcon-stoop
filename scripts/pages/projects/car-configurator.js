@@ -5,7 +5,7 @@ const carConfigurator = () => {
   root.innerHTML = `
 <article class="content">
 
-<h2>Car Konfigurator</h2>
+<h2>Car Configurator</h2>
 
 
 <div class="blockquote-wrapper">
@@ -649,10 +649,163 @@ Step N+1  ←  receives formatted options  ←  renders UI</code></pre>
 
 <hr>
 
+<h3>V3 - IndexedDB storage</h3>
+
+<p>
+<em>See the full Expalantion at <a class="accent-link" href="#/browserStorage/indexedDB">Browser Storage (IndexedDB)</a></em>
+</p>
+
+
+<hr>
+
+<h3>V4 - Dashboard</h3>
+
+<h4>Two Common Pitfalls in the Dashboard</h4>
+
+<h4>Problem 1: async/await — Why the Function Must Wait</h4>
+
+<p>
+<em>This bug led to a deep dive into async/await and the event loop. The full breakdown is here:</em>
+</p>
+<p>
+<a class="accent-link" href="#/javascript/async">→ Async JavaScript: async/await Under the Hood</a>
+</p>
+
+<p><strong>The mistake:</strong></p>
+<p>
+Assuming <strong>async</strong> means the function continues running while the data loads in the background.
+</p>
+
+<pre><code>async function getData() {
+  fetchConfigs(); // Fire and forget
+  div.innerHTML = "..."; // Runs before data arrives ❌
+}</code></pre>
+
+<p><strong>The reality:</strong></p>
+<p>
+<strong>async</strong> alone doesn't pause anything. It just allows the use of <strong>await</strong>. Without <strong>await</strong>, the promise flies off and the code keeps running. The data isn't ready when you need it.
+</p>
+
+<p><strong>The fix:</strong></p>
+<p>
+Use <strong>await</strong> to freeze the function until the promise resolves:
+</p>
+
+<pre><code>async function getData() {
+  const configs = await fetchConfigs(); // Pauses here
+  div.innerHTML = "..."; // Runs after data is ready ✅
+}</code></pre>
+
+<p>
+<strong>await</strong> literally means "wait here." The function does NOT continue until the promise is fulfilled.
+</p>
+
+<br>
+<h4>Problem 2: DOM Element vs. String in Template Literals</h4>
+
+<p><strong>The mistake I made:</strong></p>
+<p>
+I wrote <strong>createConfigCard</strong> to build a card and return a DOM element. Then I tried to inject it into a template literal using <strong>innerHTML</strong>:
+</p>
+
+<pre><code>// This function returns a DOM element — a live object
+const createConfigCard = (config) => {
+  const card = document.createElement("div");
+  card.className = "config-card";
+
+  const { model, engine, color, interior, packages } = config;
+
+  card.innerHTML = \`
+    &lt;div class="config-card-header"&gt;
+      &lt;span class="config-card-model"&gt;\${model}&lt;/span&gt;
+      &lt;button type="button" class="btn-delete"&gt;✕&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class="config-card-details"&gt;
+      &lt;p&gt;&lt;strong&gt;Engine:&lt;/strong&gt; \${engine}&lt;/p&gt;
+      &lt;p&gt;&lt;strong&gt;Color:&lt;/strong&gt; \${color}&lt;/p&gt;
+      &lt;p&gt;&lt;strong&gt;Interior:&lt;/strong&gt; \${interior}&lt;/p&gt;
+      &lt;p&gt;&lt;strong&gt;Packages:&lt;/strong&gt; \${packages.join(", ")}&lt;/p&gt;
+    &lt;/div&gt;
+  \`;
+
+  return card; // ← DOM element, not a string
+};
+
+// ❌ This fails — I can't .join() DOM elements into a string
+const createDashboard = async () => {
+  const configs = await fetchConfigs();
+
+  div.innerHTML = \`
+    &lt;h2 class="dashboard-title"&gt;Your Saved Configurations&lt;/h2&gt;
+    &lt;div class="configs-grid"&gt;
+      \${configs.map((config) => createConfigCard(config)).join("")}
+    &lt;/div&gt;
+  \`;
+};</code></pre>
+
+<p>
+<strong>Why it fails:</strong> <strong>\${}</strong> expects a string!  <strong>.join("")</strong> expects an array of strings. But <strong>createConfigCard</strong> returns DOM element objects. JavaScript tries to convert each one to a string and gets <strong>"[object HTMLDivElement]"</strong> — useless garbage in the DOM. The cards never render.
+</p>
+
+<br>
+
+<p><strong>The fix — Option A (Simplest): Return a string instead</strong></p>
+
+<pre><code>// ✅ createConfigCard now returns a string
+const createConfigCard = (config) => {
+  const { model, engine, color, interior, packages } = config;
+
+  return \`
+    &lt;div class="config-card"&gt;
+      &lt;div class="config-card-header"&gt;
+        &lt;span class="config-card-model"&gt;\${model}&lt;/span&gt;
+        &lt;button type="button" class="btn-delete"&gt;✕&lt;/button&gt;
+      &lt;/div&gt;
+      &lt;div class="config-card-details"&gt;
+        &lt;p&gt;&lt;strong&gt;Engine:&lt;/strong&gt; \${engine}&lt;/p&gt;
+        &lt;p&gt;&lt;strong&gt;Color:&lt;/strong&gt; \${color}&lt;/p&gt;
+        &lt;p&gt;&lt;strong&gt;Interior:&lt;/strong&gt; \${interior}&lt;/p&gt;
+        &lt;p&gt;&lt;strong&gt;Packages:&lt;/strong&gt; \${packages.join(", ")}&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  \`;
+};
+
+// ✅ .join("") now works — everything is a string
+div.innerHTML = \`
+  &lt;h2&gt;Your Saved Configurations&lt;/h2&gt;
+  &lt;div class="configs-grid"&gt;
+    \${configs.map((config) => createConfigCard(config)).join("")}
+  &lt;/div&gt;
+\`;</code></pre>
+
+<br>
+
+<p><strong>The fix — Option B: Keep DOM elements, use append instead</strong></p>
+
+<pre><code>// ✅ Set structure first with innerHTML, then append DOM elements
+const createDashboard = async () => {
+  const configs = await fetchConfigs();
+
+  div.innerHTML = \`
+    &lt;h2&gt;Your Saved Configurations&lt;/h2&gt;
+    &lt;div class="configs-grid"&gt;&lt;/div&gt;
+  \`;
+
+  const grid = div.querySelector(".configs-grid");
+  configs.forEach(config => {
+    grid.append(createConfigCard(config)); // ✅ Append live DOM element
+  });
+};</code></pre>
+
+<p>
+<strong>The rule:</strong> <strong>innerHTML</strong> works with strings. <strong>append</strong> works with DOM elements. Don't mix them in the same operation. Choose one path and stay on it.
+</p>
+
+<hr>
 
 <p>
 <em>See the full working code on <a class="accent-link" href="https://github.com/falconstoop/bmw-configurator" target="_blank" rel="noopener noreferrer">GitHub → BMW Configurator</a></em>
-
 </p>
 
 

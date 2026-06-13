@@ -6,6 +6,7 @@ import notFound from "./notFound.js";
 import closure from "./pages/javascript/closure.js";
 import formSubmission from "./pages/javascript/form-submission.js";
 import stateManagement from "./pages/javascript/stateManagment.js";
+import async from "./pages/javascript/async.js";
 
 // ---Projects
 import form from "./pages/projects/single-view-form.js";
@@ -39,6 +40,8 @@ const router = () => {
     formSubmission();
   } else if (currentRoute === "#/javascript/state-management") {
     stateManagement();
+  } else if (currentRoute === "#/javascript/async") {
+    async();
   }
   // Projects
   else if (currentRoute === "#/projects/form") {

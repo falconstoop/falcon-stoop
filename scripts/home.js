@@ -63,6 +63,20 @@ const home = () => {
   </p>
 </a>
 
+
+<a href="#/javascript/async" class="card">
+  <h2>Async JavaScript</h2>
+  <p>
+    The event loop, promises,
+  <br>
+  async/await, the event loop, and the bug that forced me to learn what "await" really means.
+  <br>
+  
+  <br>
+  
+  </p>
+</a>
+
   <a href="#/" class="card">
   <h2>Coming Soon...</h2>
   <p>...</p>
