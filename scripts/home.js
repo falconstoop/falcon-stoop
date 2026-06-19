@@ -16,6 +16,27 @@ const home = () => {
     <a class="projects-page-link" href="https://github.com/falconstoop" target="_blank" rel="noopener noreferrer">Projects Page: GitHub</a>
 </section>
 
+<!-- MASTERY SECTION -->
+<section class="stack-section">
+
+<div class="grid-auto-fit single-card">
+  <a href="#/mastery" class="card">
+  <h2>MASTERY</h2>
+  <p>
+  Pathway From Practice to Mastery
+  <br>
+  My "SCS" Learning Model
+  <br>
+  My strategy for learning, building, refactoring, and mastering projects.
+  </p>
+  </a>
+</div>
+
+</section>
+<!-- End of MASTERY SECTION -->
+
+<hr>
+
 <!-- JAVASCRIPT SECTION -->
 <section class="stack-section">
     <h2 class="section-title">JavaScript</h2>

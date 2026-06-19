@@ -92,6 +92,11 @@ body {
   );
 }
 
+.grid-auto-fit.single-card {
+  max-width: 600px;
+  margin-inline: auto;
+}
+
 .card {
   display: flex;
   flex-direction: column;

@@ -479,7 +479,7 @@ await db.add("configs", { model: "M4" });       // id: 3 (auto-generated)</code>
 Each record automatically receives a unique <strong>id</strong>. I'll use this <strong>id</strong> later to read, update, or delete specific configurations from the Dashboard.
 </p>
 
-<br>
+<hr>
 
 <h3>Summary</h3>
 

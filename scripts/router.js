@@ -1,5 +1,6 @@
 // Pages
 import home from "./home.js";
+import mastery from "./pages/mastery.js";
 // ---Javascript
 import whatIsJavascript from "./pages/javascript/what-is-javascipt.js";
 import notFound from "./notFound.js";
@@ -30,6 +31,8 @@ const router = () => {
     currentRoute === "#/"
   ) {
     home();
+  } else if (currentRoute === "#/mastery") {
+    mastery();
   }
   // Javascript
   else if (currentRoute === "#/javascript/what-is-javascript") {

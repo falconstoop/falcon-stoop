@@ -802,6 +802,112 @@ const createDashboard = async () => {
 <strong>The rule:</strong> <strong>innerHTML</strong> works with strings. <strong>append</strong> works with DOM elements. Don't mix them in the same operation. Choose one path and stay on it.
 </p>
 
+
+
+<br>
+
+<h3>Problem 3: Rerender vs. Direct DOM Manipulation</h3>
+
+<h4>The Confusion</h4>
+<p>
+When a user deletes a card, how does the dashboard update? Should the whole dashboard rerender, or should only the deleted card disappear? And where should the delete logic live — in the main dashboard function or inside each card?
+</p>
+
+<br>
+
+<h4>Two Approaches</h4>
+
+<p><strong>Method 1 — Direct DOM Manipulation (Surgical Update)</strong></p>
+
+<p>
+The delete functionality is placed inside <strong>createConfigCard</strong> — the function that builds a single card. When each card is created, its delete button gets a click handler attached directly to it. The main <strong>createDashboard</strong> function has no knowledge of deletion logic — it only renders cards once and delegates all interaction to the individual cards.
+</p>
+
+<pre><code>const createConfigCard = (config) => {
+  const card = document.createElement("div");
+  // ... set innerHTML ...
+
+  // Delete handler lives INSIDE the card, not the dashboard
+  card.querySelector(".btn-delete").addEventListener("click", async () => {
+    await deleteConfigFromStorage(config.id); // Remove from IndexedDB
+    card.remove(); // Remove from DOM
+  });
+
+  return card;
+};</code></pre>
+
+<p>
+<strong>When a user clicks delete:</strong>
+</p>
+
+<p>
+<strong>•</strong> That specific card's handler runs
+<br>
+<strong>•</strong> The config is removed from IndexedDB
+<br>
+<strong>•</strong> That card element is removed from the DOM
+<br>
+<strong>•</strong> Only that card disappears — the rest of the dashboard stays untouched
+</p>
+
+<p>
+<strong>createDashboard</strong> never rerenders. It doesn't even know a deletion happened. Each card manages its own lifecycle.
+</p>
+
+<p>
+✅ Efficient — only one element changes
+<br>
+✅ Separation of concerns — dashboard renders, cards handle their own interactions
+<br>
+✅ No data refetch needed
+</p>
+
+<br>
+
+<p><strong>Method 2 — Full Rerender (State-Driven)</strong></p>
+
+<p>
+The delete logic lives in the dashboard. After removing data from storage, the entire dashboard is rebuilt:
+</p>
+
+<pre><code>await deleteConfigFromStorage(id);
+createDashboard(); // Rebuild everything from fresh data</code></pre>
+
+<p>
+The whole dashboard renders from scratch with the latest data. The DOM always mirrors the database exactly.
+</p>
+
+<p>
+✅ Always in sync with storage
+<br>
+✅ Simpler mental model — one source of truth
+<br>
+❌ More work for the browser — rebuilds the entire page
+</p>
+
+<br>
+
+<h4>Which One Is Better?</h4>
+
+<p>
+Both are valid architectural choices:
+</p>
+
+<p>
+<strong>Method 1</strong> is the classic vanilla JS pattern — imperative, surgical DOM updates. Components manage their own interactions. This is how developers built UIs before frameworks existed.
+</p>
+
+<p>
+<strong>Method 2</strong> is the React-like declarative pattern — state changes trigger full rerenders. This is how modern frameworks think.
+</p>
+
+<br>
+
+<p>
+Understanding both approaches is key: <strong>Method 1</strong> teaches DOM mastery. <strong>Method 2</strong> teaches the React mindset.
+</p>
+
+
 <hr>
 
 <p>
