@@ -9,3 +9,8 @@ Deep explanations paired with project case studies — built from real code and 
 
 Built entirely with vanilla JavaScript. No frameworks. No build tools. No dependencies.
 Implements a React-like SPA architecture: hash-based routing, modular page components, and a single root render target.
+
+---
+
+## Live Demo
+https://falcon-stoop.netlify.app/

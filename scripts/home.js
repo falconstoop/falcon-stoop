@@ -160,17 +160,18 @@ const home = () => {
   </a>
 
 
-  <a href="#/" class="card">
-  <h2>Persistent Multi-Steps Form</h2>
+  <a href="#/projects/loan-application-portal" class="card">
+  <h2>Loan Application Portal</h2>
   <p>
-  <strong>(hash-synced steps with browser back support)</strong>
+  <strong>(Persistent Multi-Steps Form)</strong>
+  </p>
   <br>
-  
-  ...
+  <p>
+  hash-synced steps with browser back support
   </p>
   </a>
 
-      <a href="#/" class="card">
+  <a href="#/" class="card">
   <h2>Coming Soon...</h2>
   <p>...</p>
   </a>
@@ -252,12 +253,49 @@ const home = () => {
 <hr>
 
 
-<!-- TESTING SECTION (Future) -->
+<!-- CSS  -->
 <section class="stack-section">
-    <h2 class="section-title">SDET</h2>
-    <p class="section-subtitle">Coming soon ...</p>
+    <h2 class="section-title">CSS</h2>
+    <p class="section-subtitle">Real-world layouts, design patterns, and modern CSS techniques.</p>
+
+<div class="grid-auto-fit">
+
+
+  <a href="#/css/mobile-nav-toggle" class="card">
+  <h2>Mobile Navigation Toggle</h2>
+  <br>
+  <p>
+    Responsive navigation pattern where a hamburger menu toggles the navigation on small screens.
+
+  </p>
+  </a>
+
+  <a href="#/css/dashboard-layout" class="card">
+  <h2>Dashboard Layout</h2>
+  <br>
+  <p>
+    Responsive dashboard layouts with headers, sidebars, and content areas.
+  <br>
+  
+  A practical guide to layout architecture, navigation patterns, mobile adaptations, and reusable UI structures.
+  </p>
+  </a>
+
+  <a href="#/" class="card">
+  <h2>Coming Soon...</h2>
+  <p>...</p>
+  </a>
+
+  <a href="#/" class="card">
+  <h2>Coming Soon...</h2>
+  <p>...</p>
+  </a>
+
+
+</div>
+
 </section>
-<!-- End of TESTING SECTION (Future) -->
+<!-- End of CSS  -->
 
 <hr>
 

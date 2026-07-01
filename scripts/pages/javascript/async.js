@@ -8,6 +8,23 @@ const async = () => {
 <h2>Async JavaScript</h2>
 
 
+<div class="blockquote-wrapper">
+<blockquote>
+    <p>"He will win who knows when to fight and when not to fight." </p>
+    <footer>—  Sun Tzu ⚔️ </footer>
+    <p class="quote-twist">
+     The Callback Queue. The Microtask Queue. The Event Loop. 
+     <br>
+     Knowing when each fires — that's the battle. 
+     <br>
+     Timing is everything.
+    </p>
+</blockquote>
+</div>
+
+<br>
+
+
 <h3>Before We Start — The Bug That Forced Me Here</h3>
 
 <p>

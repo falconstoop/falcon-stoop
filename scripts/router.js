@@ -13,6 +13,7 @@ import async from "./pages/javascript/async.js";
 import form from "./pages/projects/single-view-form.js";
 import multiStepsForm from "./pages/projects/multi-steps-form.js";
 import carConfigurator from "./pages/projects/car-configurator.js";
+import loanApplicationPortal from "./pages/projects/loan-application-portal.js";
 
 //--- Browser Storage
 import clientsideStorage from "./pages/browser-storage/clientsideStorage.js";
@@ -20,6 +21,10 @@ import whatIsApi from "./pages/browser-storage/whatIsApi.js";
 import storageQuotaPersistence from "./pages/browser-storage/storageQuotaPersistence.js";
 import indexedDB from "./pages/browser-storage/indexedDB.js";
 //
+
+// --- CSS
+import dashboardDesign from "./pages/css/dashboardLayout.js";
+import mobileNavDrawer from "./pages/css/mobileNavToggle.js";
 
 const router = () => {
   const currentRoute = window.location.hash;
@@ -53,7 +58,10 @@ const router = () => {
     multiStepsForm();
   } else if (currentRoute === "#/projects/car-configurator") {
     carConfigurator();
+  } else if (currentRoute === "#/projects/loan-application-portal") {
+    loanApplicationPortal();
   }
+
   // Browser Storage
   else if (currentRoute === "#/browserStorage/client-side-storage") {
     clientsideStorage();
@@ -63,6 +71,13 @@ const router = () => {
     storageQuotaPersistence();
   } else if (currentRoute === "#/browserStorage/indexedDB") {
     indexedDB();
+  }
+
+  // css
+  else if (currentRoute === "#/css/mobile-nav-toggle") {
+    mobileNavDrawer();
+  } else if (currentRoute === "#/css/dashboard-layout") {
+    dashboardDesign();
   }
 
   // Not Found
