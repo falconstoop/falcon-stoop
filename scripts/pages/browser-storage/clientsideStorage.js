@@ -19,7 +19,23 @@ const clientsideStorage = () => {
 </div>
 
 <br>
-
+<pre><code>Client-Side Storage PAGE
+├── Before We Start
+├── You're Already Using These APIs — You Just Don't Know It
+├── What Is an Origin?
+├── Types of Browser Storage
+│   ├── 1. Cookies (Avoid using for storage)
+│   ├── 2. Web Storage — localStorage & sessionStorage (Avoid using for storage)
+│   ├── 3. WebSQL (deprecated)
+│   ├── 4. Application Cache (deprecated)
+│   ├── 5. IndexedDB
+│   ├── 6. File and Directory APIs (deprecated)
+│   ├── 7. Cache Storage
+│   └── 8. File System Access API
+├── What We'll Cover in Detail
+└── How They Compare
+</code></pre>
+<br>
 
 
 

@@ -20,6 +20,44 @@ const form = () => {
 </div>
 
 
+<br>
+<pre><code>Single-View Form PAGE
+├── SPA Parent-Child Communication Patterns
+├── The Problem
+│   ├── Context
+│   ├── What Went Wrong — The First Attempt
+│   ├── What Was Missing
+│   └── The Misunderstanding: Switch vs. Swap
+├── The Universal Pattern
+├── The Architectural Question: How Does the Child Notify the Parent?
+├── The First Attempt — And Why It Failed (Circular Dependency)
+├── Method 1: Callback Function (Props Drilling in React)
+│   └── Two Mistakes I Made Along the Way
+│       ├── Shadowing the Global State
+│       └── Closure Was at Work
+├── Method 2: Custom Events (Event-Based)
+├── Method 3: Shared State Object — Mini-Redux from Scratch
+│   ├── Why This Pattern Exists
+│   ├── The Structure
+│   ├── The Methods I Built
+│   ├── How It Works — The Cycle
+│   ├── The Redux Connection
+│   ├── Two Problems I Hit While Building the Store
+│   │   ├── Why use subscribe instead of direct push?
+│   │   └── Why store.listeners instead of this.listeners?
+│   ├── The Rule (plain object vs. class vs. factory)
+│   ├── Why setState Is the Gatekeeper
+│   └── Implementing the Shared State Object — Step by Step
+├── The Honest Truth: We Didn't Need All of This
+│   └── Why We Built It the Redux Way Anyway
+├── Two Ways to Share State: Redux vs. Context
+│   └── The Real Difference — How State Is Shared
+├── Which Pattern for Which Form?
+├── My Decision
+├── The Core SPA Loop
+└── What This Taught Me
+</code></pre>
+<br>
 
 
 <h3>SPA Parent-Child Communication Patterns</h3>

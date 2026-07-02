@@ -6,6 +6,44 @@ const indexedDB = () => {
 <article class="content">
   <h2>IndexedDB</h2>
 
+<div class="blockquote-wrapper">
+<blockquote>
+    <p>"Plan for what is difficult while it is easy."</p>
+    <footer>— Sun Tzu ⚔️ —</footer>
+    <p class="quote-twist">
+        Set the schema once in upgrade. Set autoIncrement once. 
+        <br>
+        Then a thousand db.add() calls just work — because the difficult was planned while it was easy.
+    </p>
+</blockquote>
+</div>
+
+
+<br>
+<pre><code>IndexedDB PAGE
+├── What Is IndexedDB?
+│   └── IDB (idb wrapper library)
+├── The Structure of IndexedDB
+│   ├── 1. Open a Database
+│   ├── 2. Create Object Stores
+│   │   └── When the Upgrade Callback Runs
+│   └── 3. Perform CRUD Operations
+│       └── What is a Transaction?
+├── Indexes
+├── Summary (IndexedDB Supports)
+├── Common Confusion: The Role of upgrade vs. Saving Data
+│   ├── 1. First Time — Database Doesn't Exist
+│   ├── 2. Every Time After — Database Already Exists
+│   ├── 3. Saving Data Happens Outside upgrade
+│   ├── 4. Why Does db Appear Both Inside and Outside upgrade?
+│   └── 5. How Does autoIncrement Work If upgrade Only Runs Once?
+├── Summary (The Full Flow)
+└── IDB's API Syntax
+</code></pre>
+<br>
+
+
+
 <h3>What Is IndexedDB?</h3>
 
 <p>

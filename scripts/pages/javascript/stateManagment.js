@@ -20,6 +20,37 @@ const stateManagement = () => {
 </div>
 
 <br>
+<pre><code>State Management PAGE
+├── Before We Start (origin story + 3 project links)
+├── Two Types of State (Data State + UI State)
+├── Data State — Why Pass via Callback?
+│   ├── The Problem with Passing Directly
+│   ├── The Callback Solution
+│   ├── When Passing Directly Doesn't Cause Issues
+│   └── Cross-Child Communication
+├── UI State — Two Cases for Passing to Children
+│   ├── Case 1: Child Does NOT Need to See the State
+│   ├── Case 2: Child NEEDS to See the State
+│   ├── Why Case 2 Is More Common
+│   └── Summary Table (Data State vs. UI State)
+├── 3 Dependency Patterns, In One Place
+│   ├── What Is a Dependency?
+│   ├── What Is NOT a Dependency?
+│   ├── 1. Dependency Injection
+│   ├── 2. Dependency Inversion
+│   ├── 3. Circular Dependency (Avoided)
+│   ├── What Children Receive: Dependencies vs. Communication Channels
+│   └── ! Attention ! note
+├── The Rule
+└── From State Management to the Data-to-UI Pipeline
+    ├── The Scenario
+    ├── Step 1: Fetch Data + Error Handling
+    ├── Step 2: Conditional Rendering (Empty State)
+    ├── Step 3: DOM Manipulation
+    ├── Step 4: Event Binding + Dynamic Conditional Rendering
+    └── Blueprint + Assembly Line
+</code></pre>
+<br>
 
 
 <h3>Before We start</h3>

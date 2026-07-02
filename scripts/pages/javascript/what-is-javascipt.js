@@ -19,6 +19,45 @@ const whatIsJavascript = () => {
 </div>
 
 
+<br>
+
+<pre><code>What Is JavaScript PAGE
+├── What JavaScript Actually Does Behind the Scene!
+├── 1. The Three Pillars of the Browser
+│   ├── DOM (Document Object Model)
+│   ├── JavaScript Engine
+│   └── Render Engine
+├── 2. What the DOM Actually Is
+│   ├── 2.1 The DOM Is Not What You See
+│   ├── 2.2 The DOM Is Constructed Once
+│   └── 2.3 What Happens When You "Change" the DOM
+├── 3. JavaScript's Role in the Browser
+│   ├── 3.1 JavaScript Has Its Own Memory
+│   ├── 3.2 JavaScript and the DOM Relationship
+│   └── 3.3 Two Common Application Models
+├── 4. The Render Engine: The Actual Painter
+│   ├── 4.1 What the Render Engine Does
+│   ├── 4.2 The Critical Separation
+│   └── 4.3 Repaint vs. Reflow
+├── 5. The Full Data Flow
+│   ├── 5.1 Initial Page Load
+│   ├── 5.2 User Interaction (Data Change)
+│   ├── 5.3 Submitting Data to Backend
+│   └── 5.4 Next Day Page Load
+├── 6. The Flash Problem (Flash of Incorrect Content)
+│   ├── 6.1 What Causes It
+│   └── 6.2 Solutions by Architecture
+├── 7. Implications for Professional Frontend Development
+│   ├── 7.1 State Management
+│   ├── 7.2 Performance
+│   ├── 7.3 User Experience Patterns
+│   └── 7.4 Testing Strategy
+├── 8. The Complete Mental Model (Diagram)
+└── References
+</code></pre>
+
+<br>
+
 
   <h3>What JavaScript Actually Does behind the scene!</h3>
   <p>To Understand JavaScript deeply, one should first know What it does behind the scene.

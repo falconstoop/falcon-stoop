@@ -20,6 +20,75 @@ const multiStepsForm = () => {
 </div>
 
 
+<br>
+<pre><code>Multi-Steps Form PAGE
+├── Steps, Buttons, and the Browser's Hidden Rules
+├── Two Types of Multi-Step Forms
+│   ├── Type 1: Short Forms (Signup, Login, Contact)
+│   └── Type 2: Long Wizards (Loan Applications, Tax Filing, Onboarding)
+│       └── How to Handle Browser Back in Wizards
+├── Problem 1: The Bug — A Yellow Console Warning
+│   ├── What Was Happening
+│   ├── The Solution
+│   ├── Why Enter Triggers the Submit Button
+│   ├── The Mistake in My Code
+│   └── What This Taught Me
+├── Problem 2: Navigating Between Steps — Centralized vs. Decentralized
+│   ├── Method 1: Centralized (currentStep Variable)
+│   ├── Method 2: Decentralized (Invoke Inside Handler)
+│   └── The Choice
+├── Problem 3: Solving Prop Drilling with Named Exports
+│   ├── The Problem: Prop Drilling
+│   ├── The Breaking Point
+│   ├── The Root Cause
+│   ├── The Solution: Named Export
+│   ├── Before (Prop Drilling) vs. After (Named Export)
+│   ├── Why This Works
+│   ├── Comparison of All Approaches
+│   ├── The Choice
+│   ├── The Lesson
+│   ├── From Callback to Micro Shared State Object Pattern
+│   ├── The React Parallel: Context API as a Named Export
+│   └── Context API — The Castle and the Envoy
+│       └── The Broader Kingdom — Three Communication Strategies
+├── Problem 4: Dependency Injection — Handling Form Data Across Steps
+│   ├── The Enter Key & Form Structure Problem
+│   ├── The Obvious Solution (And Why I Paused)
+│   ├── The First Attempt: closest() (And Why It Failed)
+│   ├── The Engineer's Solution: Dependency Injection
+│   ├── Why It Works
+│   ├── Circular Dependency vs. Dependency Injection — A Clear Distinction
+│   ├── The Flow
+│   ├── Note on Button Types
+│   ├── How the Parent Knows the Form Has a Listener (It Doesn't Need To)
+│   ├── To Remember
+│   ├── Dependency Injection — The Simple Version (Single Module)
+│   └── Controlled Circular Dependency vs. Uncontrolled Circular Dependency
+│       └── Controlled Circular Dependency in React
+├── Problem 5: Separating Navigation State from Data State
+│   ├── State Variables in Multi-Step Forms
+│   ├── Why Separate the Logic
+│   └── What This Project Solidified
+│       └── The React Connection
+├── Problem 6: Saving Data Across Steps — The data Object
+│   ├── Outside vs. Inside the Render Function
+│   ├── Passing data to Steps — Four Approaches
+│   │   ├── Approach 1: Pass as Argument
+│   │   ├── Approach 2: Named Export
+│   │   ├── Approach 3: Callback Wrapper
+│   │   └── Approach 4: Mix into navigateStep (Anti-Pattern)
+│   ├── Comparison Table
+│   ├── My Choice: Approach 3 — Callback Wrapper
+│   └── Why signupData Keys Are Defined Upfront
+└── Problem 7: Displaying Saved Data in the Review Step
+    ├── The Problem
+    ├── Three Approaches
+    ├── Comparison Table
+    └── My Choice: Approach 2 — Pass as Argument (For This Project)
+        └── The Trade-Off
+</code></pre>
+<br>
+
 
 
 

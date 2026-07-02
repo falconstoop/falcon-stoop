@@ -19,6 +19,29 @@ const formSubmission = () => {
 </div>
 
 
+<br>
+<pre><code>HTML Form Submission PAGE
+├── What Really Happens When You Press Enter
+├── The Foundational Rule: Input Count Matters
+├── Inputs + One Button: The Four Scenarios
+│   ├── Scenario 1: 1 input + 1 submit button
+│   ├── Scenario 2: 2+ inputs + 1 submit button
+│   ├── Scenario 3: 1 input + 1 button (type="button")
+│   └── Scenario 4: 2+ inputs + 1 button (type="button")
+├── Quick Reference: Inputs + 1 Button
+├── Inputs + Multiple Buttons: The Hidden Rule
+│   ├── Scenario 1: 1 input + multiple submit buttons
+│   ├── Scenario 2: 2+ inputs + multiple submit buttons
+│   ├── Scenario 3: 1 input + mix of submit and button types
+│   ├── Scenario 4: 2+ inputs + mix of submit and button types
+│   └── Scenario 5: Inputs + only button types (no submit button)
+├── Quick Reference: Inputs + Multiple Buttons
+├── The Five Core Rules
+└── What This Taught Me
+</code></pre>
+<br>
+
+
 <h3>What Really Happens When You Press Enter</h3>
 
 <p>

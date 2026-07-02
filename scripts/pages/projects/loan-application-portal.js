@@ -7,6 +7,22 @@ const loanApplicationPortal = () => {
 
 <h2>Loan Application Portal</h2>
 
+<div class="blockquote-wrapper">
+<blockquote>
+    <p>"Divide and conquer."</p>
+    <footer>— Julius Caesar 🏛️ —</footer>
+    <p class="quote-twist">
+        Divide the UI into Component-Based Architecture. 
+        <br>
+        Divide the logic into Modular Architecture. 
+        <br>
+        Divide the state into State Management domains. 
+        <br>
+        Conquer the complexity.
+    </p>
+</blockquote>
+</div>
+
 
 <h3>Before We Start</h3>
 
@@ -34,7 +50,7 @@ It also explores the challenges encountered during development, the reasoning be
 
 <br>
 
-<pre><code>Documentation Overview
+<pre><code>Loan Application Portal PAGE
 |
 ├── Architectural Concepts
 │   ├── Component-Based Architecture

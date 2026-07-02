@@ -19,6 +19,28 @@ const closure = () => {
 </blockquote>
 </div>
 
+<br>
+<pre><code>CLOSURE PAGE
+├── What is Closure!?
+├── No Closure Here (auth function example)
+├── Now Closure Applied (createLogin example)
+├── When Does Closure Apply?
+├── Deep Dive: Local Memory / Variable Environment
+│   ├── createFunction Example (no lingering connection)
+│   └── Breaking the Illusion
+├── Behind the Scenes: The outer Function
+│   ├── Step-by-Step Execution (invoking add1 inside)
+│   └── The Key Question: Definition vs. Invocation
+├── Leaving Home and Taking Home With It (returning add1)
+│   ├── Step-by-Step Execution
+│   └── The Backpack Emerges
+├── Garbage Collector + C.O.V.E / P.L.S.R.D
+│   ├── What the Garbage Collector Does
+│   └── C.O.V.E = P.L.S.R.D = Backpack 
+├── Lexical Scope vs. Dynamic Scope
+└── In the End, Closure Is a Kind of Memory
+</code></pre>
+<br>
 
 
 <h3>What is Closure!?</h3>

@@ -9,6 +9,37 @@ const storageQuotaPersistence = () => {
   <h2>Storage Quota & Persistence</h2>
 
 
+<div class="blockquote-wrapper">
+<blockquote>
+    <p>"Do not build your castle on another man's land."</p>
+    <footer>— Miyamoto Musashi ⚔️ —</footer>
+    <p class="quote-twist">
+        The hard drive belongs to the user, not to the browser.
+        <br>
+        The browser is the gatekeeper. The data lives on borrowed land — unless you request the deed.
+    </p>
+</blockquote>
+</div>
+
+
+<br>
+<pre><code>Storage Quota & Persistence PAGE
+├── What Is Storage Quota?
+│   └── Origin-based quota (protocol + host + port)
+├── What Counts Toward Quota
+│   ├── Counts toward quota
+│   └── Does NOT count toward quota
+├── Storage Modes: Best Effort vs. Persistent
+│   ├── Best Effort (default)
+│   └── Persistent
+├── How to Activate Persistent Storage
+│   ├── Checking the Current Status (persisted)
+│   ├── Requesting Persistent Storage (persist)
+│   ├── When Will the Browser Grant It?
+│   └── persist() vs. persisted()
+└── Checking Quota Usage (estimate)
+</code></pre>
+<br>
 
 
 <h3>What Is Storage Quota?</h3>

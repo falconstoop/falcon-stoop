@@ -18,6 +18,25 @@ const whatIsApi = () => {
 </div>
 
 
+<br>
+<pre><code>What Is API PAGE
+├── API (Application Programming Interface)
+├── The Big Picture
+├── Two Main Groups of APIs
+│   ├── Group 1: Web APIs
+│   └── Group 2: Local APIs
+│       └── Browser APIs
+├── A Separate Category: API Design Styles
+│   ├── REST
+│   ├── SOAP
+│   └── GraphQL
+├── Browser API vs. Web API
+├── REST API
+│   └── REST vs. GraphQL
+└── Author's Note
+</code></pre>
+<br>
+
 
 
 <h3>API</h3>

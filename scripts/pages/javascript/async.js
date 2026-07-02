@@ -23,6 +23,25 @@ const async = () => {
 </div>
 
 <br>
+<pre><code>Async JavaScript PAGE
+├── Before We Start — The Bug That Forced Me Here
+├── Where Async Actually Comes From
+├── The Browser's Async Toolbox (Web APIs)
+├── Callback & Callback Queue & Event Loop
+│   ├── What is Callback?
+│   ├── The Callback Queue
+│   └── The Event Loop
+├── Promises
+│   └── Fetch — How Modern Async Starts
+├── .then() & await
+│   └── Await (Inside a Function vs. Global Scope)
+├── Callback Queue vs. Macrotask Queue
+│   └── Microtask Queue: .then() vs. await
+├── Back to the Dashboard Problem (Car Configurator)
+│   └── Why I MUST use await in the Dashboard
+└── Final Mental Model
+</code></pre>
+<br>
 
 
 <h3>Before We Start — The Bug That Forced Me Here</h3>
