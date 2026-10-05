@@ -25,6 +25,7 @@ import indexedDB from "./pages/browser-storage/indexedDB.js";
 // --- CSS
 import dashboardDesign from "./pages/css/dashboardLayout.js";
 import mobileNavDrawer from "./pages/css/mobileNavToggle.js";
+import reusableLayoutComponents from "./pages/css/reusableLayoutComponents.js";
 
 const router = () => {
   const currentRoute = window.location.hash;
@@ -74,7 +75,9 @@ const router = () => {
   }
 
   // css
-  else if (currentRoute === "#/css/mobile-nav-toggle") {
+  else if (currentRoute === "#/css/reusable-layout-components") {
+    reusableLayoutComponents();
+  } else if (currentRoute === "#/css/mobile-nav-toggle") {
     mobileNavDrawer();
   } else if (currentRoute === "#/css/dashboard-layout") {
     dashboardDesign();

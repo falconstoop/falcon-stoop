@@ -32,6 +32,7 @@ const dashboardDesign = () => {
 │       ├── grid-template-columns: auto 1fr;
 │       ├── grid-template-rows: auto 1fr;
 │       └── grid-template-areas
+        └── The Gist
 ├── .dashboard-header
 │   ├── Responsibilities
 │   ├── Desktop View
@@ -50,6 +51,9 @@ const dashboardDesign = () => {
 │   │   ├── Core Styles
 │   │   ├── Navigation Inside the Sidebar
 │   │   └── Core Styles for Navigation Items
+|   |   └── When the Sidebar Should Not Stretch
+|   |   └── align-self in Grid
+│   |     └── align-self in Flexbox
 │   ├── Sidebar Width: Fixed vs. Auto
 │   │   ├── Letting the grid handle it (auto)
 │   │   └── Setting an explicit width
@@ -67,6 +71,7 @@ const dashboardDesign = () => {
 │   │   └── Core Styles
 │   ├── Mobile View
 │   └── What Happens Without the Grid
+├──  Bonus: Dark Mode Toggle 
 └── Summary</code></pre>
 
 <br>
@@ -191,6 +196,36 @@ This allows each child to be placed by name instead of line numbers:
 <pre><code>.dashboard-header { grid-area: header; }
 .sidebar          { grid-area: sidebar; }
 .dashboard-main   { grid-area: main; }</code></pre>
+
+
+<h4>The Gist</h4>
+<p>
+In a grid, width is controlled by columns, height by rows. <strong>auto</strong> means "size to your content." <strong>1fr</strong> means "take the remaining space."
+</p>
+
+<pre><code>grid-template-columns → width (left / right)
+    auto = sidebar width based on content
+    1fr  = main content fills remaining width
+
+grid-template-rows    → height (top / bottom)
+    auto = header height based on content
+    1fr  = sidebar + main fill remaining height</code></pre>
+
+<br>
+<p>
+Then use <strong>grid-template-areas</strong> to control where each section sits — header spans both columns across the top, sidebar and main sit side by side in the second row.
+</p>
+
+<p>
+This structure is great for dashboards, admin panels, e-commerce layouts, and any interface with a fixed sidebar and scrollable main content.
+</p>
+
+<br>
+
+<p>
+For <strong>mobile view</strong>, the sidebar is taken out of the grid flow using <strong>position: fixed</strong> (or <strong>absolute</strong>) combined with <strong>transform: translateX(-100%)</strong> — sliding it off-screen as an overlay instead of occupying a permanent column.
+</p>
+
 
 <hr>
 
@@ -397,6 +432,74 @@ Inside the sidebar, navigation is typically structured as a list:
 
 <br>
 
+<h5>When the Sidebar Should Not Stretch</h5>
+<p>
+In some layouts — like e-commerce filters or category menus — the sidebar should only take the height of its content, not fill the entire row. Adding <strong>align-self: start</strong> prevents the sidebar from stretching:
+</p>
+
+<pre><code>.sidebar {
+  align-self: start;
+}</code></pre>
+<p>
+The main content still fills the remaining space with <strong>1fr</strong> and scrolls independently. The empty area below the sidebar remains unused.
+</p>
+
+<br>
+
+<h4>Align-Self</h4>
+
+<h5>align-self — Controlling Vertical Position in Grid</h5>
+<p>
+<strong>align-self</strong> controls how a single grid item positions itself vertically within its cell. By default, grid items stretch to fill the full height of their row (<strong>align-self: stretch</strong>).
+</p>
+
+<p>
+Common values:
+<br>
+<strong>• stretch</strong> (default) — Fills the entire height of the row.
+<br>
+<strong>• start</strong> — Sits at the top. Height is determined by content.
+<br>
+<strong>• center</strong> — Vertically centered within the row.
+<br>
+<strong>• end</strong> — Sits at the bottom.
+</p>
+
+<pre><code>┌──────────────────────────────────┐
+│  start    │  center   │   end    │
+│  ┌──┐     │           │          │
+│  │  │     │  ┌──┐     │          │
+│  │  │     │  │  │     │  ┌──┐    │
+│  └──┘     │  └──┘     │  │  │    │
+│           │           │  └──┘    │
+│           │           │          │
+└──────────────────────────────────┘</code></pre>
+
+<p>
+In this dashboard, <strong>align-self: start</strong> on the sidebar means it sits at the top of the second row and only takes the height of its content — leaving unused space below it. The main content still fills the full row height.
+</p>
+
+<h5>align-self in Flexbox</h5>
+<p>
+In Flexbox, <strong>align-self</strong> works on the <strong>cross axis</strong> — which changes depending on <strong>flex-direction</strong>:
+</p>
+
+<p>
+<strong>• flex-direction: row</strong> (default) — Cross axis is vertical. <strong>align-self</strong> controls <strong>height</strong> (top/bottom positioning).
+<br>
+<strong>• flex-direction: column</strong> — Cross axis is horizontal. <strong>align-self</strong> controls <strong>width</strong> (left/right positioning).
+</p>
+
+<pre><code>Flexbox (row)          Flexbox (column)
+cross axis = vertical  cross axis = horizontal
+align-self = height    align-self = width</code></pre>
+
+<p>
+In Grid, it's simpler: the cross axis is <strong>always vertical</strong>. <strong>align-self</strong> always controls height. No exceptions.
+</p>
+
+<br>
+
 <h4>Sidebar Width: Fixed vs. Auto</h4>
 
 <p>
@@ -577,6 +680,234 @@ On mobile, those values would need to be overridden. The grid avoids this entire
 
 <p>
 The internal styling of <strong>.dashboard-main</strong> varies significantly between dashboards. Some use a grid of cards, others a single chart, tables, or a combination. The styles shown here cover only the container's role in the overall layout — the content inside is entirely up to the specific design.
+</p>
+
+<hr>
+
+
+<h4>Dark Mode Toggle</h4>
+
+<p>
+A dark mode toggle is a common feature in modern dashboards. The implementation follows a simple but clever pattern: a hidden checkbox paired with a styled label.
+</p>
+
+<h5>The Checkbox + Label Pattern</h5>
+
+<p>
+The checkbox handles the <strong>state</strong> (checked = dark, unchecked = light). The label handles the <strong>appearance</strong> — styled as a toggle switch. When the user clicks the label, the browser automatically toggles the checkbox. No JavaScript required for the visual behavior.
+</p>
+
+<pre><code>&lt;input type="checkbox" id="dark-mode-toggle" class="toggle-input"&gt;
+&lt;label for="dark-mode-toggle" class="toggle-label"&gt;&lt;/label&gt;</code></pre>
+
+<h5>Why a Label Instead of a Span?</h5>
+
+<p>
+A <strong>&lt;label&gt;</strong> with a <strong>for</strong> attribute is natively connected to the checkbox. Clicking the label automatically toggles the checkbox — this is built into the browser. A <strong>&lt;span&gt;</strong> has no such connection. You would need to write a click handler in JavaScript to manually toggle the checkbox state.
+</p>
+
+<p>
+<strong>• &lt;label&gt;</strong> → click → checkbox toggles automatically (native browser behavior).
+<br>
+<strong>• &lt;span&gt;</strong> → click → nothing happens (unless you add JavaScript).
+</p>
+
+<p>
+One line of HTML vs. extra JavaScript. The label wins.
+</p>
+
+<h5>Styling the Toggle</h5>
+
+<pre><code>/* Hide the checkbox visually but keep it accessible */
+.toggle-input {
+  display: none;
+}
+
+/* The label becomes the toggle switch */
+.toggle-label {
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+  background-color: #b2bec3;
+  border-radius: 24px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* The circle inside the toggle */
+.toggle-label::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+/* When checked: change background and slide the circle */
+.toggle-input:checked + .toggle-label {
+  background-color: #0f172a;
+}
+
+.toggle-input:checked + .toggle-label::after {
+  transform: translateX(24px);
+}</code></pre>
+
+<h5>The Adjacent Sibling Selector (+)</h5>
+
+<p>
+The <strong>+</strong> in CSS is the <strong>adjacent sibling combinator</strong>. It selects an element that comes <strong>directly after</strong> another element, sharing the same parent:
+</p>
+
+<pre><code>.toggle-input:checked + .toggle-label</code></pre>
+
+<p>
+This means: "Select the <strong>.toggle-label</strong> that is immediately after a checked <strong>.toggle-input</strong>." Not any label — only the one right next to it.
+</p>
+
+<p>
+In JavaScript, the equivalent is:
+</p>
+
+<pre><code>checkbox.nextElementSibling  // the label right after it</code></pre>
+
+<p>
+Both grab the very next sibling element. CSS does it in a selector. JavaScript does it in code.
+</p>
+
+<h5>What Else Can We Use Instead of +?</h5>
+
+<p>
+If the label is not directly after the checkbox (for example, there are other elements between them), the adjacent sibling selector won't work. Alternatives:
+</p>
+
+<p>
+<strong>• ~ (general sibling combinator)</strong> — Selects <strong>any</strong> sibling after the checkbox, not just the immediate one:
+</p>
+
+<pre><code>.toggle-input:checked ~ .toggle-label</code></pre>
+
+<p>
+<strong>• :has() (parent selector)</strong> — Selects an ancestor based on its children. Useful if the toggle is wrapped in a container:
+</p>
+
+<pre><code>.toggle-wrapper:has(.toggle-input:checked) .toggle-label</code></pre>
+
+<p>
+<strong>• JavaScript</strong> — If CSS selectors can't reach the label, add a class manually:
+</p>
+
+<pre><code>checkbox.addEventListener("change", () => {
+  document.body.classList.toggle("dark-mode", checkbox.checked);
+});</code></pre>
+
+<h5>Alternative: Button with JavaScript</h5>
+
+<p>
+Instead of the checkbox + label pattern, some dashboards use a simple <strong>&lt;button&gt;</strong>:
+</p>
+
+<pre><code>&lt;button id="dark-mode-toggle" aria-label="Toggle dark mode"&gt;🌙&lt;/button&gt;</code></pre>
+
+<pre><code>const btn = document.getElementById("dark-mode-toggle");
+
+btn.addEventListener("click", () => {
+  document.body.classList.toggle("dark-mode");
+
+  // Save preference
+  const isDark = document.body.classList.contains("dark-mode");
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+
+  // Update icon
+  btn.textContent = isDark ? "☀️" : "🌙";
+});</code></pre>
+
+<p>
+Both approaches are valid. The <strong>checkbox + label</strong> pattern handles the visual toggle with pure CSS. The <strong>button</strong> approach gives more control — you can run additional logic, save preferences, and update icons. Choose based on your needs.
+</p>
+
+<h5>Preserving the User's Preference</h5>
+
+<p>
+Regardless of the approach, save the user's choice to <strong>localStorage</strong> so it persists across page loads:
+</p>
+
+<pre><code>// On page load: read saved preference
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme === "dark") {
+  document.body.classList.add("dark-mode");
+  checkbox.checked = true;
+}
+
+// On toggle: save preference
+checkbox.addEventListener("change", () => {
+  const isDark = checkbox.checked;
+  document.body.classList.toggle("dark-mode", isDark);
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+});</code></pre>
+
+<p>
+The toggle is a small detail — but it touches HTML semantics (label vs. span), CSS selectors (+, ~, :has), and JavaScript state management (localStorage). Building it from scratch forces all three to work together.
+</p>
+
+<br>
+
+<h4>JavaScript — Connecting the Toggle to the Page</h4>
+
+<p>
+The checkbox handles the visual toggle via CSS. JavaScript connects that state to the actual dark mode behavior — applying a class to <strong>&lt;body&gt;</strong> and saving the user's preference.
+</p>
+
+<pre><code>const checkbox = document.getElementById("dark-mode-toggle");
+
+// On page load: restore saved preference
+const savedTheme = localStorage.getItem("theme");
+
+if (savedTheme === "dark") {
+  document.body.classList.add("dark-mode");
+  checkbox.checked = true;
+}
+
+// On toggle: apply the class and save the preference
+checkbox.addEventListener("change", () => {
+  document.body.classList.toggle("dark-mode", checkbox.checked);
+  localStorage.setItem("theme", checkbox.checked ? "dark" : "light");
+});</code></pre>
+
+<p>
+<strong>•</strong> The checkbox is selected — it holds the truth (checked or not). The label is just the visual.
+<br>
+<strong>•</strong> On page load, <strong>localStorage</strong> is checked. If the user previously chose dark mode, the class and checkbox state are restored.
+<br>
+<strong>•</strong> On each toggle, the class on <strong>&lt;body&gt;</strong> is updated and the preference is saved.
+</p>
+
+<h5>classList.toggle() — The Second Argument</h5>
+
+<p>
+<strong>classList.toggle()</strong> accepts an optional second argument — a boolean that forces the class on or off instead of flipping it:
+</p>
+
+<pre><code>element.classList.toggle("dark-mode");              // Flips: adds if missing, removes if present
+element.classList.toggle("dark-mode", true);        // Force ADD
+element.classList.toggle("dark-mode", false);       // Force REMOVE</code></pre>
+
+<p>
+In the dark mode toggle:
+</p>
+
+<pre><code>document.body.classList.toggle("dark-mode", checkbox.checked);</code></pre>
+
+<p>
+This says: "If the checkbox is checked, add <strong>dark-mode</strong>. If unchecked, remove it." The class follows the checkbox state exactly — no risk of the two getting out of sync.
+</p>
+
+<p>
+Without the second argument, <strong>toggle()</strong> simply flips the class each time it's called. If something else on the page modifies the class independently, the checkbox and the class could mismatch. The boolean argument prevents that entirely.
 </p>
 
 

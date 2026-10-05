@@ -105,13 +105,13 @@ This case study walks through the two types of multi-step forms, the architectur
 <hr>
 
 
-<p>
-<strong>The problems fell into two groups:</strong>
-</p>
+<h4>
+The problems fell into two groups:
+</h4>
+
+<h5>Navigation Group:</h5>
 
 <p>
-<strong>Navigation Group:</strong>
-<br>
 Problem 2: How to control steps (centralized)
 <br>
 Problem 3: How to communicate across modules (named exports)
@@ -119,9 +119,9 @@ Problem 3: How to communicate across modules (named exports)
 Problem 4: How to handle the Enter key (dependency injection)
 </p>
 
+<h5>Data Group:</h5>
+
 <p>
-<strong>Data Group:</strong>
-<br>
 Problem 5: How to separate navigation from data
 <br>
 Problem 6: How to save data across steps
@@ -217,6 +217,11 @@ Buttons inside a <strong>&lt;form&gt;</strong> have a default type of <strong>su
 But it got worse: <strong>I had two buttons, both type="submit"</strong> (buttons by default have type="submit"). Both tried to submit on click. Pressing Enter in any input field had no single clear target. The browser attempted submission twice — once for each button — and canceled both times.
 </p>
 
+<br>
+<p>
+In the auth page (login/signup toggle):
+</p>
+
 <pre><code>  form.innerHTML = \`
     <label>Email</label>
     <input type="email">
@@ -230,18 +235,37 @@ But it got worse: <strong>I had two buttons, both type="submit"</strong> (button
 
 <br>
 
+<p>
+The same problem appeared in the steps too. Each step had Next and Back buttons — both defaulting to type="submit":
+</p>
+
+
+<pre><code>// Step 1 — both buttons are type="submit" by default
+div.innerHTML = \`
+  Step ...
+  
+  <button class="btn">Back</button>
+  <button class="btn">Next</button>
+
+\`;</code></pre>
+
 <h4>The Solution</h4>
 
 <p>
 Only <strong>one</strong> button should have <strong>type="submit"</strong> — the one that actually submits the form. Every other button must have <strong>type="button"</strong>:
 </p>
 
-<pre><code>&lt;button type="submit"&gt;Create Account&lt;/button&gt;  &lt;!-- Submits the form --&gt;
-&lt;button type="button"&gt;Back&lt;/button&gt;             &lt;!-- Only runs click handler --&gt;
-&lt;button type="button"&gt;Sign Up&lt;/button&gt;          &lt;!-- Only runs click handler --&gt;</code></pre>
+<pre><code>&lt;!-- Auth page: only Sign In submits --&gt;
+&lt;button type="submit"&gt;Sign In&lt;/button&gt;
+&lt;button type="button"&gt;Don't Have an Account? Log In&lt;/button&gt;
+
+&lt;!-- Step page: only Next submits --&gt;
+&lt;button type="submit"&gt;Next&lt;/button&gt;
+&lt;button type="button"&gt;Back&lt;/button&gt;</code></pre>
+
 
 <p>
-<strong>One form = one submit button.</strong> Every other button gets <strong>type="button"</strong>. This gives you full control:
+<strong>One form = one submit button.</strong> Every other button gets <strong>type="button"</strong>. This gives full control:
 </p>
 
 <p>
@@ -259,10 +283,9 @@ Only <strong>one</strong> button should have <strong>type="submit"</strong> — 
 <p>
 This isn't JavaScript. It's the browser. When you press Enter inside any <strong>&lt;input&gt;</strong> within a <strong>&lt;form&gt;</strong>, the browser automatically finds the <strong>&lt;button type="submit"&gt;</strong> and triggers it. No event listener required. No framework. Just an old web standard — because users expect Enter to submit forms.
 </p>
-
-<p>
-<strong>The behavior:</strong>
 <br>
+<h5>The behavior:</h5>
+<p>
 <strong>• One submit button →</strong> Enter triggers it.
 <br>
 <strong>• Multiple submit buttons →</strong> Enter triggers the first one in HTML order.
@@ -282,14 +305,30 @@ This is the exact set of rules I documented in full — every scenario, every co
 <br>
 
 <h4>The Mistake in My Code</h4>
-
 <p>
-Both my "Sign Up" and "Log In" buttons — the ones that switch between views — were <strong>type="submit"</strong>. They weren't meant to submit anything. They were meant to call a callback and re-render. But the browser didn't know that.
+In the <strong>auth page</strong>, both <strong>"Sign Up"</strong> and <strong>"Log In"</strong> buttons — the ones that switch between views — were <strong>type="submit"</strong>. They weren't meant to submit anything. They were meant to call a callback and re-render. But the browser didn't know that.
 </p>
 
 <p>
-<strong>The fix:</strong> Navigation buttons become <strong>type="button"</strong>. Only the final form submission button — the one that actually sends data — gets <strong>type="submit"</strong>. Warning gone. Behavior clean. One rule, applied consistently.
+In the <strong>steps</strong>, both <strong>"Next"</strong> and <strong>"Back"</strong> buttons were also <strong>type="submit"</strong> by default. But only <strong>"Next"</strong> should submit — the user presses Enter to move forward. <strong>"Back"</strong> should never submit — it only navigates backward.
 </p>
+
+<br>
+<h5>
+The fix:
+</h5>
+<p>
+<strong>•</strong> Auth page — Navigation buttons become <strong>type="button"</strong>. They switch views, they don't submit data.
+<br>
+<strong>•</strong> Step pages — <strong>Next</strong> becomes <strong>type="submit"</strong> (covers both click and Enter key). <strong>Back</strong> becomes <strong>type="button"</strong> (click only, never triggered by Enter).
+<br>
+<strong>•</strong> Final step — The final submission button (<strong>Create Account</strong>, <strong>Save</strong>, etc.) gets <strong>type="submit"</strong>. This is the only button that actually sends data.
+</p>
+
+<h5>
+Warning gone. Behavior clean. One rule, applied consistently across every form in the application.
+</h5>
+
 <br>
 <h4>What This Taught Me</h4>
 <p>

@@ -261,6 +261,18 @@ const home = () => {
 <div class="grid-auto-fit">
 
 
+  <a href="#/css/reusable-layout-components" class="card">
+  <h2>Reusable Layout Components</h2>
+  <br>
+  <p>
+    One component, many variations — using custom properties and data attributes.
+
+    <br>
+    How to write layout CSS once and reuse it across every section of a site.
+
+  </p>
+  </a>
+
   <a href="#/css/mobile-nav-toggle" class="card">
   <h2>Mobile Navigation Toggle</h2>
   <br>

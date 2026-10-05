@@ -14,7 +14,11 @@ const form = () => {
     <p class="quote-twist">
      You have no idea how many times I tore this form down and built it back up — until it had nothing left to teach me. 
      <br>
-     While others were busy building their tenth app, I was still here. Still learning. Still rebuilding.
+     While others were busy building their tenth app, I was still here. 
+     <br>
+     Still learning. 
+     <br>
+     Still rebuilding.
     </p>
 </blockquote>
 </div>
@@ -81,7 +85,7 @@ Problem → Circular Dependency → Callback → Shadowing → Closure → Custo
 
 <h4>Context:</h4>
 <p>
-I was building a multi-step form inside a Single Page Application with a hash router. The auth page lives at <code>#/home</code>. It contains two form-creation functions: <strong>createLogin()</strong> and <strong>createSignup()</strong>. The goal: show one form at a time, switch between them via buttons, and never change the URL.
+I was building a form inside a Single Page Application with a hash router. The auth page lives at <code>#/home</code>. It contains two form-creation functions: <strong>createLogin()</strong> and <strong>createSignup()</strong>. The goal: show one form at a time, switch between them via buttons, and never change the URL.
 </p>
 
 <h4>What Went Wrong — The First Attempt:</h4>

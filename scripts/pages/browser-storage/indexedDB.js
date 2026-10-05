@@ -8,12 +8,10 @@ const indexedDB = () => {
 
 <div class="blockquote-wrapper">
 <blockquote>
-    <p>"Plan for what is difficult while it is easy."</p>
-    <footer>— Sun Tzu ⚔️ —</footer>
+    <p>"From one thing, know ten thousand things."</p>
+    <footer>— Miyamoto Musashi ⚔️ —</footer>
     <p class="quote-twist">
-        Set the schema once in upgrade. Set autoIncrement once. 
-        <br>
-        Then a thousand db.add() calls just work — because the difficult was planned while it was easy.
+        One database. Many object stores. Each store a domain. Each index a path. From one openDB call, know every record in your application.
     </p>
 </blockquote>
 </div>
