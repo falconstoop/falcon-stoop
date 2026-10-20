@@ -39,6 +39,7 @@ const stateManagement = () => {
 │   ├── 1. Dependency Injection
 │   ├── 2. Dependency Inversion
 │   ├── 3. Circular Dependency (Avoided)
+│   ├── Controlled vs. Uncontrolled Circular Dependency 
 │   ├── What Children Receive: Dependencies vs. Communication Channels
 │   └── ! Attention ! note
 ├── The Rule
@@ -71,28 +72,6 @@ const stateManagement = () => {
 <br>
 
 
-<pre><code>State Management Page
-├── Before We Start (origin story + 3 project links)
-├── Two Types of State (Data State + UI State)
-├── Data State — Why Pass via Callback?
-│   ├── The Problem with Passing Directly
-│   ├── The Callback Solution
-│   ├── When Passing Directly Doesn't Cause Issues
-│   └── Cross-Child Communication
-├── UI State — Two Cases
-│   ├── Case 1: Child doesn't see state
-│   ├── Case 2: Child needs to see state
-│   ├── Why Case 2 Is More Common
-│   └── Summary Table
-├── 3 Dependency Patterns
-│   ├── Dependency Injection
-│   ├── Dependency Inversion
-│   ├── Circular Dependency
-│   ├── What Children Receive
-│   └── ! Attention ! note
-└── The Rule
-│   
-└── From State Management to Data-to-UI Pipeline</code></pre>
 
 <hr>
 
@@ -410,6 +389,98 @@ Two modules importing each other. Parent imports children & children import Pare
 <br>
 <p>
 <em>(Note: even a one-way upward import — child importing parent — would violate Dependency Inversion.)</em>
+</p>
+
+<br>
+<h4>Controlled vs. Uncontrolled Circular Dependency</h4>
+
+<p>
+A circle between two components is not automatically bad. It depends entirely on <strong>control</strong>. The same circular shape can be a dangerous trap or a clean pattern. The difference is the <strong>middleman</strong> — the callback that keeps both sides from touching directly.
+</p>
+
+<br>
+
+<p><strong>Uncontrolled Circular Dependency (The Bad Loop)</strong></p>
+
+<p>
+Parent depends on child. Child depends on parent. They call each other directly — no middleman, no boundary, no clear exit.
+</p>
+
+<pre><code>// Parent
+const parent = () => { child(); };
+
+// Child
+const child = () => { parent(); }; // Calls parent directly — loop</code></pre>
+
+<p>
+<strong>•</strong> No middle function
+<br>
+<strong>•</strong> No control over the cycle
+<br>
+<strong>•</strong> Components are inseparable
+<br>
+<strong>•</strong> A design flaw
+</p>
+
+<br>
+
+<p><strong>Controlled Circular Dependency (The Callback Pattern)</strong></p>
+
+<p>
+Parent creates a middle function — the callback. Parent passes it to the child. Child calls the middle function, not the parent. The middle function calls the parent on the child's behalf. One cycle. Intentional. Bounded.
+</p>
+
+<pre><code>// Parent
+const parent = () => {
+  const middleFunction = () => { parent(); }; // Controlled re-entry
+  child(middleFunction);
+};
+
+// Child
+const child = (callback) => {
+  callback(); // Calls middle function, not parent directly
+};</code></pre>
+
+<p>
+<strong>•</strong> A middle function acts as the bridge
+<br>
+<strong>•</strong> The loop is intentional and bounded (one cycle)
+<br>
+<strong>•</strong> Components remain independent of each other
+<br>
+<strong>•</strong> Clean architecture — this is the callback pattern
+</p>
+
+<br>
+
+<h4>The Difference</h4>
+
+<pre><code>┌──────────────────────────────┬──────────────────────────────────────────────┐
+│ Uncontrolled Circular        │ Controlled Circular (Callback)               │
+├──────────────────────────────┼──────────────────────────────────────────────┤
+│ Middleman: None              │ Middleman: Middle function                   │
+│ Who child calls: Parent      │ Who child calls: Middle function (bridge)    │
+│ Control: Unintended loop     │ Control: Intentional, one cycle             │
+│ Design: Flaw                 │ Design: Pattern                             │
+│ child() calls parent()       │ callback() calls parent() on child's behalf │
+└──────────────────────────────┴──────────────────────────────────────────────┘</code></pre>
+
+<br>
+
+<p>
+<strong>In the projects:</strong>
+<br>
+<strong>• navigateStep</strong> = controlled circular dependency (callback pattern)
+<br>
+<strong>• switchForm</strong> = controlled circular dependency (callback pattern)
+<br>
+<strong>• Passing form to child</strong> = dependency injection (no circle at all)
+</p>
+
+<br>
+
+<p class="attention">
+<em>In React, this pattern appears as the standard props-callback flow — parent passes a function, child calls it, parent re-renders. Same middleman, same control.</em>
 </p>
 
 <br>

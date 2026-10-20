@@ -265,11 +265,11 @@ const home = () => {
   <h2>Reusable Layout Components</h2>
   <br>
   <p>
-    One component, many variations — using custom properties and data attributes.
-
+    Custom properties, data attributes, centering rules, and grids.
     <br>
-    How to write layout CSS once and reuse it across every section of a site.
-
+    One component, many variations.
+    <br>
+    The rules that make layout CSS reusable across every section.
   </p>
   </a>
 
@@ -277,6 +277,10 @@ const home = () => {
   <h2>Mobile Navigation Toggle</h2>
   <br>
   <p>
+    position: absolute vs. fixed vs. sticky.
+    <br>
+    height vs. transform animations.
+    <br>
     Responsive navigation pattern where a hamburger menu toggles the navigation on small screens.
 
   </p>
@@ -308,6 +312,61 @@ const home = () => {
 
 </section>
 <!-- End of CSS  -->
+
+<hr>
+
+
+<!-- DSA SECTION  -->
+<section class="stack-section">
+    <h2 class="section-title">DSA</h2>
+    <p class="section-subtitle">Higher-order methods, algorithmic patterns, advanced structures</p>
+
+
+  <div class="grid-auto-fit">
+
+
+<a href="#/dsa/string-methods" class="card">
+  <h2>String Methods</h2>
+  <br>
+  <p>
+    slice, split, replace, includes, and more.
+    <br>
+    What each does, what it returns, and when to use it.
+  </p>
+</a>
+
+
+<a href="#/dsa/array-methods" class="card">
+  <h2>Array Methods</h2>
+  <br>
+  <p>
+    slice, split, replace, includes, and more.
+    <br>
+    What each does, what it returns, and when to use it.
+    <br>
+    The tools for transforming, filtering, and accumulating lists.
+  </p>
+</a>
+
+
+
+  <a href="#/" class="card">
+  <h2>Coming Soon...</h2>
+  <p>...</p>
+  </a>
+
+
+  <a href="#/" class="card">
+  <h2>Coming Soon...</h2>
+  <p>...</p>
+  </a>
+
+
+
+  </div>
+</section>
+<!-- End of DSA SECTION -->
+
 
 <hr>
 

@@ -27,6 +27,10 @@ import dashboardDesign from "./pages/css/dashboardLayout.js";
 import mobileNavDrawer from "./pages/css/mobileNavToggle.js";
 import reusableLayoutComponents from "./pages/css/reusableLayoutComponents.js";
 
+// --- DSA
+import stringMethods from "./pages/DSA/stringMethods.js";
+import arrayMethods from "./pages/DSA/arrayMethods.js";
+
 const router = () => {
   const currentRoute = window.location.hash;
 
@@ -81,6 +85,13 @@ const router = () => {
     mobileNavDrawer();
   } else if (currentRoute === "#/css/dashboard-layout") {
     dashboardDesign();
+  }
+
+  // DSA
+  else if (currentRoute === "#/dsa/string-methods") {
+    stringMethods();
+  } else if (currentRoute === "#/dsa/array-methods") {
+    arrayMethods();
   }
 
   // Not Found

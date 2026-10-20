@@ -31,7 +31,6 @@ const multiStepsForm = () => {
 │   ├── What Was Happening
 │   ├── The Solution
 │   ├── Why Enter Triggers the Submit Button
-│   ├── The Mistake in My Code
 │   └── What This Taught Me
 ├── Problem 2: Navigating Between Steps — Centralized vs. Decentralized
 │   ├── Method 1: Centralized (currentStep Variable)
@@ -55,19 +54,19 @@ const multiStepsForm = () => {
 │   ├── The Enter Key & Form Structure Problem
 │   ├── The Obvious Solution (And Why I Paused)
 │   ├── The First Attempt: closest() (And Why It Failed)
-│   ├── The Engineer's Solution: Dependency Injection
-│   ├── Why It Works
-│   ├── Circular Dependency vs. Dependency Injection — A Clear Distinction
+│   ├── The Engineering Solution
+│   ├── The Root Cause: The Element in Memory vs. The Element in the DOM
+│   │   ├── What Works in Each State
+│   │   ├── The Engineering Solution Had an Unnecessary Step
+│   │   └── The Simpler Version
+│   ├── Circular Dependency vs. Dependency Injection
 │   ├── The Flow
 │   ├── Note on Button Types
-│   ├── How the Parent Knows the Form Has a Listener (It Doesn't Need To)
-│   ├── To Remember
-│   ├── Dependency Injection — The Simple Version (Single Module)
-│   └── Controlled Circular Dependency vs. Uncontrolled Circular Dependency
-│       └── Controlled Circular Dependency in React
+│   └── The Lesson
 ├── Problem 5: Separating Navigation State from Data State
 │   ├── State Variables in Multi-Step Forms
 │   ├── Why Separate the Logic
+|   ├── Where the Data Lives 
 │   └── What This Project Solidified
 │       └── The React Connection
 ├── Problem 6: Saving Data Across Steps — The data Object
@@ -302,32 +301,6 @@ This is the exact set of rules I documented in full — every scenario, every co
 <a class="accent-link" href="#/javascript/form-submission">→ HTML Form Submission: Every scenario, every combination, every silent rule — fully documented.</a>
 </p>
 
-<br>
-
-<h4>The Mistake in My Code</h4>
-<p>
-In the <strong>auth page</strong>, both <strong>"Sign Up"</strong> and <strong>"Log In"</strong> buttons — the ones that switch between views — were <strong>type="submit"</strong>. They weren't meant to submit anything. They were meant to call a callback and re-render. But the browser didn't know that.
-</p>
-
-<p>
-In the <strong>steps</strong>, both <strong>"Next"</strong> and <strong>"Back"</strong> buttons were also <strong>type="submit"</strong> by default. But only <strong>"Next"</strong> should submit — the user presses Enter to move forward. <strong>"Back"</strong> should never submit — it only navigates backward.
-</p>
-
-<br>
-<h5>
-The fix:
-</h5>
-<p>
-<strong>•</strong> Auth page — Navigation buttons become <strong>type="button"</strong>. They switch views, they don't submit data.
-<br>
-<strong>•</strong> Step pages — <strong>Next</strong> becomes <strong>type="submit"</strong> (covers both click and Enter key). <strong>Back</strong> becomes <strong>type="button"</strong> (click only, never triggered by Enter).
-<br>
-<strong>•</strong> Final step — The final submission button (<strong>Create Account</strong>, <strong>Save</strong>, etc.) gets <strong>type="submit"</strong>. This is the only button that actually sends data.
-</p>
-
-<h5>
-Warning gone. Behavior clean. One rule, applied consistently across every form in the application.
-</h5>
 
 <br>
 <h4>What This Taught Me</h4>
@@ -807,44 +780,119 @@ const step1FullName = (navigateStep, currentStep, totalSteps, form) => {
 No restructuring. No DOM searching. No new modules. One extra parameter. The architecture stays intact.
 </p>
 
-<br>
 
-<h4>Circular Dependency vs. Dependency Injection — A Clear Distinction</h4>
+<br>
+<h4>The Root Cause: The Element in Memory vs. The Element in the DOM</h4>
 
 <p>
-This looks similar to the prop drilling problem solved earlier — parent passing something to child, child using it. But the nature of what's exchanged changes everything.
-</p>
-
-<p>
-<strong>Circular Dependency:</strong> Parent depends on child. Child depends on parent. They're locked in a loop — each one needs the other to function. Parent passes itself (or a function that re-executes the parent) to the child. Child calls it. Parent runs again. Parent calls child again. Round and round. A closed circle with no exit. Module A imports B. Module B imports A. They can't load without each other. <strong>A design flaw.</strong>
-</p>
-
-<p>
-<strong>Dependency Injection:</strong> Parent creates a simple resource — a DOM element, a plain value, a tool. Parent injects that resource into the child. The child receives it, uses it — attaches a listener, reads a value, modifies the element — and returns. The child never calls the parent. Never triggers a re-render. The parent and child remain independent of each other. No loop. No circle. Just a one-way handoff. A one-time assembly during rendering.
-</p>
-
-<p>
-<strong>The distinction is not "whole parent vs. part of parent." It's:</strong>
-<br>
-<strong>•</strong> Does the child call back into the parent? → Callback (controlled) or Circular (uncontrolled loop)
-<br>
-<strong>•</strong> Does the child just use what it was handed? → Dependency Injection
-<br>
-<strong>•</strong> In this solution, the form element was a tool. The parent injected it. The child used it. No callback loop. No circular dependency. Just a clean, one-way handoff.
+An element exists in <strong>two states</strong>: as an object in memory, and as a node in the DOM. The difference explains everything — why <strong>closest()</strong> failed, why listeners still worked, and why the approach can be simplified.
 </p>
 
 <br>
 
-<h4>The Flow</h4>
+<h5>What Works in Each State</h5>
+
+<pre><code>┌──────────────────────────────────────────┬───────────┬───────────┐
+│ Operation                                │ In Memory │ In DOM    │
+├──────────────────────────────────────────┼───────────┼───────────┤
+│ Set innerHTML                            │ ✅        │ ✅        │
+│ Append children                          │ ✅        │ ✅        │
+│ addEventListener                         │ ✅        │ ✅        │
+│ closest() / parentElement                │ ❌        │ ✅        │
+└──────────────────────────────────────────┴───────────┴───────────┘</code></pre>
+
+<p>
+<strong>closest()</strong> walks up the tree — a detached element has no ancestors, so it returns <strong>null</strong>. But <strong>addEventListener()</strong> walks nowhere — it attaches the listener directly to the element object. That's why the Engineering Solution worked.
+</p>
+
+<br>
+
+<h5>The Engineering Solution Had an Unnecessary Step</h5>
+
+<p>
+In the Engineering Solution, the parent passed the form to the child, the child attached a listener to it, but the child still created a separate <strong>&lt;div&gt;</strong> to hold its content and returned that div back to the parent. The parent then appended the div into the form.
+</p>
+
+<pre><code>Parent creates form → passes form to child → child adds listener → child returns div → parent appends div to form.</code></pre>
+
+<p>
+The child created two elements — the borrowed form and its own div — when the form itself could have held everything.
+</p>
+
+<br>
+
+<h4>The Simpler Version</h4>
+
+<p>
+Instead of borrowing the form only for a listener and building a separate div, the child takes full ownership of the form: it fills it with content, attaches its own listener, and returns the finished form to the parent. The parent inserts it into the DOM.
+</p>
+
+<pre><code>Parent creates form → passes it to child → child fills it with content + attaches listener → child returns the form → parent appends it to the container.</code></pre>
+
+<pre><code>// Parent — creates the form, passes it, appends the result
+const form = document.createElement("form");
+container.append(step1FullName(navigateStep, 1, 6, form));
+
+// Child — owns the form completely
+const step1FullName = (navigateStep, currentStep, totalSteps, form) => {
+  form.innerHTML = \`...\`;                  // content goes into the form
+
+  form.addEventListener("submit", (e) => {   // listener attached to the form
+    e.preventDefault();
+    navigateStep(currentStep + 1);
+  });
+
+  return form;                              // finished form goes back
+};</code></pre>
+
+<p>
+One object instead of two. No borrowed form, no extra div. The child fills the form, wires the form, and returns the form. The parent does the only thing it needs to — place the finished element into the DOM.
+</p>
+
+<br>
+
+
+
+<hr>
+
+
+<br>
+
+<h4>Circular Dependency vs. Dependency Injection</h4>
+
+<p>
+This looks similar to the prop drilling problem solved earlier — parent passing something to child, child using it. But what's exchanged changes everything.
+</p>
+
+<p>
+<strong>Circular Dependency:</strong> Parent depends on child. Child depends on parent. They call each other directly — a closed loop with no exit.
+</p>
+
+<p>
+<strong>Dependency Injection:</strong> Parent creates a resource. Parent hands it to the child. Child uses it and returns. The child never calls the parent. No loop. Just a one-way handoff.
+</p>
+
+<p>
+The distinction: <strong>does the child call back into the parent?</strong> If yes — callback or circular. If no — dependency injection.
+</p>
+
+<p>
+For a full breakdown of dependency patterns — injection, inversion, circular, controlled vs. uncontrolled — see the <a class="accent-link" href="#/javascript/state-management">State Management page</a>.
+</p>
+
+<br>
+
+<h5>The Flow</h5>
 
 <pre><code>1. Parent creates form
 2. Parent gives form to child
 3. Child attaches a submit listener to form
-4. Child returns its div (inputs + buttons)
-5. Parent appends the returned div to form</code></pre>
+4. Child fills the form with content
+5. Child returns the finished form
+6. Parent appends the form to the container</code></pre>
 
 <p>
-The form stays with the parent the whole time. The child borrows it to add a listener, then returns its own content. The parent assembles everything. No passing back. Just borrowing.
+The form stays with the parent the whole time. The child borrows it, modifies it, and returns it. The parent assembles everything. No passing back. Just borrowing.
 </p>
 
 <br>
@@ -852,220 +900,13 @@ The form stays with the parent the whole time. The child borrows it to add a lis
 <h4>Note on Button Types</h4>
 
 <p>
-Next buttons changed to <strong>type="submit"</strong> — they now trigger the form's submit event, covering both click and Enter key with one handler. Back buttons explicitly set to <strong>type="button"</strong> — they trigger navigation only, never submission. The bug from the Single-View Form (yellow console warning) is avoided entirely. <strong>One handler. Two behaviors. Clear intent.</strong>
+Next buttons changed to <strong>type="submit"</strong> — they trigger the form's submit event, covering both click and Enter key with one handler. Back buttons set to <strong>type="button"</strong> — they trigger navigation only, never submission. The bug from Problem 1 is avoided entirely. <strong>One handler. Two behaviors. Clear intent.</strong>
 </p>
 
-<br>
-
-<h4>How the Parent Knows the Form Has a Listener (It Doesn't Need To)</h4>
-
-<p>
-The parent never checks if the listener is attached. It doesn't need to know. Here's what actually happens:
-</p>
-
-<pre><code>1. Parent creates a blank form element in memory
-2. Parent hands that form to the child
-3. Child attaches a submit event listener directly to the form element — the listener is bound to the form and stored in memory
-4. Child returns its own div (inputs and buttons)
-5. Parent appends the returned div into the form it already owns</code></pre>
-
-<p>
-The form element now carries both the listener (attached by the child, held in memory) and the content (appended by the parent). They live together on the same DOM element.
-</p>
-
-<p>
-If the child returned the form back to the parent — meaning the parent had to wait for the child to give it something before continuing — that would create mutual dependency. The parent couldn't finish without the child. The child couldn't function without the parent. Loop.
-</p>
-
-<p>
-But here, the child doesn't return the form. It returns its own content (the div). The form stays with the parent the entire time. The parent lends it. The child uses it briefly. The parent keeps owning it. No waiting. No depending. No circle.
-</p>
 
 <br>
 
-<h4>To Remember</h4>
 
-<p>
-<strong>• Circular Dependency:</strong> Two things (parent & children) locked in a circle (loop) — each depends on (calls) the other. No independence.
-</p>
-
-<p>
-<strong>• Dependency Injection:</strong> One thing (parent) gives a tool (variable, obj, ...) to another (children). The receiver (child/ren) uses it. No calling back. No loop. Just a one-way handoff.
-</p>
-
-<br>
-
-<h4>Dependency Injection — The Simple Version (Single Module)</h4>
-
-<p>
-Strip away modules, imports, and exports. At its core, Dependency Injection is just <strong>one function lending a resource to another.</strong>
-</p>
-
-<pre><code>// Function A (Parent)
-const functionA = () => {
-  const element = document.createElement("form"); // Create resource
-  
-  functionB(element); // Lend it to Function B
-  
-  // Function B has finished. The element now carries its modifications.
-  // Function A continues using the updated element.
-  element.append(someContent);
-};
-
-// Function B (Child)
-const functionB = (element) => {
-  element.addEventListener("submit", handler); // Modify the borrowed resource
-  // No return needed. The element was modified in memory.
-};</code></pre>
-
-<p>
-<strong>What happens:</strong>
-<br>
-<strong>1.</strong> Function A creates an element — it lives in A's memory
-<br>
-<strong>2.</strong> Function A calls Function B, passing the element
-<br>
-<strong>3.</strong> Function B modifies the element (adds a listener) and finishes
-<br>
-<strong>4.</strong> Function A continues, now using the updated element
-<br>
-<strong>5.</strong> The element never left A's ownership. B just borrowed it.
-</p>
-
-<p>
-No modules. No imports. No circularity. One function lends a resource. Another modifies it. The lender continues with the modified version. <strong>That's Dependency Injection — stripped to its essence.</strong> Everything else is just structure around this simple idea.
-</p>
-
-<br>
-
-<h4>Controlled Circular Dependency vs. Uncontrolled Circular Dependency</h4>
-
-<p>
-<strong>Circular Dependency Has Two Faces</strong>
-<br>
-A circle between two components — parent and child communicating — is not automatically bad. It depends entirely on control. The same circular shape can be a dangerous trap or a clean pattern. The difference is the middleman (the callback) — the bridge that keeps both sides from touching directly while still allowing communication.
-</p>
-
-<br>
-
-<p>
-<strong>Uncontrolled Circular Dependency (The Bad Loop)</strong>
-<br>
-Parent depends on child. Child depends on parent. They call each other directly with no middleman (the callback), no boundary, no clear exit. Parent calls child. Child calls parent back. Parent calls child again. Round and round. The loop is unintended, unbounded, and dangerous.
-</p>
-
-<pre><code>// Parent
-const parent = () => { child(); };
-
-// Child
-const child = () => { parent(); }; // Calls parent directly — loop</code></pre>
-
-<p>
-<strong>•</strong> No middle function
-<br>
-<strong>•</strong> No control over the cycle
-<br>
-<strong>•</strong> Components are inseparable
-<br>
-<strong>•</strong> A design flaw
-</p>
-
-<br>
-
-<p>
-<strong>Controlled Circular Dependency (The Callback Pattern)</strong>
-<br>
-Parent creates a middle function (the callback). Parent passes it to child. Child calls the middle function — not the parent. The middle function calls the parent on the child's behalf. One cycle. Intentional. Bounded. The loop exists but it's managed.
-</p>
-
-<pre><code>// Parent
-const parent = () => {
-  const middleFunction = () => { parent(); }; // Controlled re-entry
-  child(middleFunction);
-};
-
-// Child
-const child = (callback) => {
-  callback(); // Calls middle function, not parent directly
-};</code></pre>
-
-<p>
-<strong>•</strong> A middle function acts as the bridge
-<br>
-<strong>•</strong> The loop is intentional and bounded (one cycle)
-<br>
-<strong>•</strong> Components remain independent of each other
-<br>
-<strong>•</strong> Clean architecture — this is the callback pattern
-</p>
-
-<br>
-
-<h4>The Difference</h4>
-
-<pre><code>┌──────────────────────────────┬──────────────────────────────────────────────┐
-│ Uncontrolled Circular        │ Controlled Circular (Callback)               │
-├──────────────────────────────┼──────────────────────────────────────────────┤
-│ Middleman: None              │ Middleman: Middle function                   │
-│ Who child calls: Parent      │ Who child calls: Middle function (bridge)    │
-│ Control: Unintended loop     │ Control: Intentional, one cycle             │
-│ Design: Flaw                 │ Design: Pattern                             │
-│ child() calls parent()       │ callback() calls parent() on child's behalf │
-└──────────────────────────────┴──────────────────────────────────────────────┘</code></pre>
-
-<br>
-
-<h4>The Same Shape, Different Intent</h4>
-
-<p>
-Both are circles. One is a trap. The other is a pattern. <strong>The middle function (the callback) is what makes the difference</strong> — it's the bridge that keeps parent and child from touching directly while still allowing communication.
-</p>
-
-<p>
-<strong>In My Projects:</strong>
-<br>
-<strong>• navigateStep</strong> = controlled circular dependency (callback pattern)
-<br>
-<strong>• switchForm</strong> = controlled circular dependency (callback pattern)
-<br>
-<strong>• Passing form to child</strong> = dependency injection (no circle at all)
-</p>
-
-<p>
-Every pattern I've used falls into one of these categories. I now understand the architecture behind each choice.
-</p>
-
-<br>
-
-<h4>Controlled Circular Dependency in React — Callbacks, Props, and Injection</h4>
-
-<p>
-React uses Controlled Circular Dependency by default — that's props drilling. Parent passes a callback as a prop. Child calls it. Parent re-renders. Controlled. Intentional. The standard React pattern.
-</p>
-
-<p>
-React does not have built-in Dependency Injection like Angular does. But we can absolutely apply it ourselves in React:
-<br>
-<strong>•</strong> Passing a ref (useRef) to a child to let it manipulate a DOM element
-<br>
-<strong>•</strong> Passing a configuration object for the child to use
-<br>
-<strong>•</strong> Using Context API to provide a value without drilling (arguably a form of injection)
-</p>
-
-<p>
-<strong>So:</strong>
-<br>
-<strong>•</strong> Props/Callbacks = Controlled Circular Dependency (React's default)
-<br>
-<strong>•</strong> Dependency Injection = Possible in React, but you bring the pattern yourself
-</p>
-
-<p>
-I now understand both. When I see props drilling in React, I'll think: <em>"That's controlled circular dependency — the same pattern I built in vanilla JS."</em> No mystery left.
-</p>
-
-<br>
 
 <h4>The Lesson</h4>
 
@@ -1138,6 +979,22 @@ It's not just about avoiding repetition — it's about <strong>separation of con
 <p>
 This architecture is exactly how React state management — and stores like Redux — work under the hood: separate state slices for UI control vs. data persistence.
 </p>
+
+<br>
+
+
+<h4>Where the Data Lives</h4>
+
+<p>
+Navigation state — <strong>currentStep</strong> — controls which step is visible. Data state — <strong>signupData</strong> — holds what the user entered. Both live in the parent module, outside the render function, so both survive re-renders.
+</p>
+
+
+<p>
+Two variables. Two responsibilities. One controls the view. The other holds the values. Neither interferes with the other — because they're kept separate.
+</p>
+
+
 
 <br>
 
@@ -1503,7 +1360,7 @@ If a dashboard is added in Version 3 (Persistent Wizard), <strong>Approach 2</st
 
 
 <p>
-<em>See the full working code on <a href="https://github.com/falconstoop" target="_blank" rel="noopener noreferrer">GitHub →</a></em>
+<em>See the full working code on <a class="accent-link" href="https://github.com/falconstoop/form-patterns" target="_blank" rel="noopener noreferrer">GitHub → Multi-steps form</a></em>
 </p>
 
 

@@ -42,6 +42,7 @@ const mobileNavToggle = () => {
 │   ├── Issue 4: Hidden Content Still Overflowed
 │   ├── Issue 5: transform Without Positioning
 │   └── Issue 6: position: absolute vs. position: fixed
+|   └── Issue 7: position: sticky — Absolute vs. Fixed vs. Sticky
 ├── Final Mental Model
 └── Final Summary
 </code></pre>
@@ -778,28 +779,154 @@ Choose the positioning method based on the desired navigation behavior.
 <strong>Use <code>position: fixed</code></strong> when the navigation should behave as an off-canvas drawer that overlays the page. This allows the menu to cover part or all of the viewport, remain visible while scrolling, and work naturally with overlays or backdrop blur effects.
 </p>
 
-<h5>Key Takeaway</h5>
+
+
+
+<hr>
+
+<h4>Issue 7 — Making the Header Stick: (position sticky)</h4>
+
+<h5>Problem:</h5>
 
 <p>
-Both <strong>position: absolute</strong> and <strong>position: fixed</strong> work with <strong>transform</strong>. The difference is not the animation—it is where the element is positioned.
+After the mobile navigation was working, the next requirement was to keep the header visible while the user scrolls. The header should stay at the top of the viewport — but only within its own section, not permanently like a fixed element.
 </p>
 
 <p>
-<strong>position: absolute</strong> attaches the navigation to a container.<br>
-<strong>position: fixed</strong> attaches the navigation to the viewport.
-</p>
-
-<p>
-As a general rule:
-</p>
-
-<p>
-<strong>Dropdown menu below the header</strong> → <strong>position: absolute</strong><br>
-<strong>Slide-in navigation drawer</strong> → <strong>position: fixed</strong><br>
-<strong>Dashboard sidebar</strong> → <strong>position: fixed</strong>
+The existing layout used <strong>position: fixed</strong> for the mobile drawer. Applying the same to the header would work — but it would remove the header from the document flow, and the page content would jump up to fill the empty space.
 </p>
 
 <br>
+<h5>Why position sticky?</h5>
+
+<p>
+<strong>position: sticky</strong> is a hybrid between <strong>relative</strong> and <strong>fixed</strong>. The element behaves like a normal element in the document flow until the user scrolls past a defined threshold — then it sticks to that position for as long as its parent is in view.
+</p>
+
+<pre><code>.site-header {
+  position: sticky;
+  top: 0;
+}</code></pre>
+
+<p>
+With just two lines, the header sticks to the top of the viewport once the user scrolls past it. It stays in the normal document flow — so no layout shift — and automatically releases when its parent scrolls out of view.
+</p>
+
+<p>
+CSS handles the sticking itself. JavaScript is only needed when the behavior should change based on scroll state — for example, adding a background or shadow once the header becomes stuck.
+</p>
+
+<pre><code>const header = document.querySelector(".site-header");
+
+window.addEventListener("scroll", () => {
+  if (window.scrollY > 0) {
+    header.classList.add("header--scrolled");
+  } else {
+    header.classList.remove("header--scrolled");
+  }
+});</code></pre>
+
+<pre><code>.site-header {
+  position: sticky;
+  top: 0;
+  background: transparent;
+  transition: background 300ms ease, box-shadow 300ms ease;
+}
+
+.site-header.header--scrolled {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}</code></pre>
+
+<p>
+CSS keeps the header stuck. JavaScript decides when to change its appearance — the most common pattern being a background switch once the user scrolls.
+</p>
+
+
+
+<br>
+
+<h5>Why This Fits the Site Header</h5>
+
+<p>
+The header needs to stay visible while the user scrolls — but it should not cover the entire page permanently. <strong>position: sticky</strong> gives the header these properties naturally:
+</p>
+
+<p>
+<strong>• No layout shift</strong> — the header keeps its space in the document. The content below doesn't move up when the page loads.
+<br>
+<strong>• Scroll-triggered</strong> — the header sticks only after the user scrolls past it.
+<br>
+<strong>• Contained</strong> — the header sticks only within its parent element. For a site header, the parent is typically the entire page, so the header sticks throughout the scroll. But for elements like sticky table headers or sidebars, the parent is a smaller container — and the element stops sticking once that container scrolls out of view.
+</p>
+
+<br>
+<p>
+This is why sticky is the ideal choice for headers, sub-headers, table headers, sticky sidebars, and any element that should remain visible only within a specific section.
+</p>
+
+<br>
+
+<h5>Absolute vs. Fixed vs. Sticky — The Differences</h5>
+
+<pre><code>┌───────────────┬────────────────────────────────┬────────────────────────────────────┐
+│ Position      │ Reference Point                │ Behavior                           │
+├───────────────┼────────────────────────────────┼────────────────────────────────────┤
+│ absolute      │ Nearest positioned ancestor    │ Removed from flow. Stays inside    │
+│               │                                │ its container.                     │
+│ fixed         │ Viewport                       │ Removed from flow. Stays visible   │
+│               │                                │ regardless of scroll.              │
+│ sticky        │ Normal flow until threshold,   │ Remains in flow. Sticks within     │
+│               │ then viewport                  │ its parent when scrolled.          │
+└───────────────┴────────────────────────────────┴────────────────────────────────────┘</code></pre>
+
+<br>
+
+<p><strong>position: absolute</strong></p>
+<p>
+Removed from the normal document flow. Positioned relative to its nearest positioned ancestor. Used for dropdowns, tooltips, and elements that need to sit inside a specific container.
+</p>
+
+<p><strong>position: fixed</strong></p>
+<p>
+Removed from the normal document flow. Positioned relative to the viewport. Remains in the same place no matter how far the user scrolls. Used for fixed navigation bars, floating action buttons, and overlays that must always be visible.
+</p>
+
+<p><strong>position: sticky</strong></p>
+<p>
+Stays in the normal document flow until the user scrolls to a defined threshold — then behaves like fixed within its parent. Used for headers, sticky table headers, and sidebars that remain visible only within their section.
+</p>
+
+<br>
+
+<h5>When to Use Each</h5>
+
+<pre><code>Dropdown menu              → position: absolute
+Floating action button     → position: fixed
+Sticky header              → position: sticky
+Sticky table header        → position: sticky
+Sticky sidebar             → position: sticky
+Modal / overlay            → position: fixed
+Tooltip                    → position: absolute</code></pre>
+
+<br>
+
+<h5>Key Takeaway</h5>
+
+<p>
+<strong>position: absolute</strong> attaches the element to a container.
+<br>
+<strong>position: fixed</strong> attaches the element to the viewport.
+<br>
+<strong>position: sticky</strong> attaches the element to the scroll position — but keeps it inside its parent.
+</p>
+
+<p>
+For headers, sticky is almost always the correct choice — it keeps the header visible without removing it from the page flow or disrupting the layout of surrounding content.
+</p>
+
+
+
 
 
 <hr>

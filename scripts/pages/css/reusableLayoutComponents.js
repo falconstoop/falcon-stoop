@@ -19,8 +19,7 @@ const reusableLayoutComponents = () => {
 </blockquote>
 </div>
 
-
-<pre><code>REUSABLE LAYOUT COMPONENTS PAGE
+<pre><code>Reusable Layout Components PAGE
 ├── One Component, Many Variations
 │   ├── Consistency
 │   ├── Responsiveness
@@ -37,7 +36,21 @@ const reusableLayoutComponents = () => {
 │       ├── Default Behavior
 │       ├── Modifier — data-width="wide"
 │       ├── Modifier — data-width="narrow"
-│       └── Modifier — data-padding-inline="none"
+│       ├── Modifier — data-padding-inline="none"
+│       │
+│       ├── Centering and Narrowing — How They Work Together
+│       │   ├── max-width narrows
+│       │   ├── margin-inline: auto centers
+│       │   └── The Mental Model (section = vertical, wrapper = horizontal)
+│       │
+│       └── A Note On: Centering Rules — Block vs. Inline-Block vs. Inline
+│           ├── The Three Types
+│           ├── Block parent → Block child
+│           ├── Block parent → Inline-block child
+│           ├── Block parent → Inline child
+│           ├── Inline-block parent → Any child
+│           ├── The Rule
+│           └── Why This Matters
 │
 ├── The Grid Components
 │   ├── 1. .grid-equal-cols (Static — Switches at Breakpoint)
@@ -66,11 +79,25 @@ const reusableLayoutComponents = () => {
 │       ├── Why This Replaces Media Queries
 │       └── Modifiers
 │
+├── Grid Gotchas
+│   ├── Intro (two levels of control)
+│   │
+│   ├── 1. The Grid Controls the Cards — Not Their Content
+│   │   ├── .grid-equal-cols code
+│   │   ├── Aligning Cards When One Is Shorter
+│   │   │   └── stretch vs. center
+│   │   └── The height: 100% Trap
+│   │
+│   └── 2. The Card Controls Its Own Content
+│       ├── .flex-col code
+│       └── (card controls inside)
+│
 ├── Data Attributes vs. Classes
 │   ├── 1. Modifier Classes (Pros & Cons)
 │   ├── 2. Data Attributes (Pros & Cons)
 │   ├── Side-by-Side Comparison
-│   └── Why This Page Uses Data Attributes
+│   ├── Why This Page Uses Data Attributes
+│   └── AND vs. OR in Attribute Selectors
 │
 └── The JavaScript Side
     ├── Selecting by Class
@@ -124,19 +151,19 @@ Every section of a page needs breathing room — space above and below so conten
 
 <pre><code>.section {
   /* default vertical padding */
-  --section-padding: 2rem;
-  padding-block: var(--section-padding);
+  --section-padding-block: 2rem;
+  padding-block: var(--section-padding-block);
 
   /* larger padding on bigger screens */
   &amp;[data-padding-block="large"] {
     @media (width &gt; 760px) {
-      --section-padding: 6rem;
+      --section-padding-block: 6rem;
     }
   }
 }</code></pre>
 
 <p>
-<strong>--section-padding</strong> is a <strong>custom property (CSS variable)</strong> — a named value that the rest of the component reads from. Instead of hardcoding <strong>2rem</strong> directly into <strong>padding-block</strong>, the value lives in one place. Change the variable, and everything that uses it updates.
+<strong>--section-padding-block</strong> is a <strong>custom property (CSS variable)</strong> — a named value that the rest of the component reads from. Instead of hardcoding <strong>2rem</strong> directly into <strong>padding-block</strong>, the value lives in one place. Change the variable, and everything that uses it updates.
 </p>
 
 <br>
@@ -169,22 +196,22 @@ This is the real power of the pattern. If a section needs different spacing — 
 </p>
 
 <pre><code>.section {
-  --section-padding: 2rem;
-  padding-block: var(--section-padding);
+  --section-padding-block: 2rem;
+  padding-block: var(--section-padding-block);
 
   &amp;[data-padding-block="small"] {
-    --section-padding: 1rem;
+    --section-padding-block: 1rem;
   }
 
   &amp;[data-padding-block="large"] {
     @media (width &gt; 760px) {
-      --section-padding: 6rem;
+      --section-padding-block: 6rem;
     }
   }
 
   &amp;[data-padding-block="x-large"] {
-    @media (width &gt; 760px) {
-      --section-padding: 10rem;
+    @media (width &gt; 1000px) {
+      --section-padding-block: 10rem;
     }
   }
 }</code></pre>
@@ -274,6 +301,162 @@ Same component. Four variations. Each one controlled by a data attribute — no 
 
 <br>
 
+<h5>Centering and Narrowing — How They Work Together</h5>
+
+<p>
+A wrapper can do two things horizontally: limit its width, and center itself within the section. These are two separate properties — and both are needed to get the result.
+</p>
+
+<pre><code>.wrapper {
+  --wrapper-max-width: 1100px;
+
+  max-width: var(--wrapper-max-width);   /* narrows the width */
+  margin-inline: auto;                   /* centers it */
+  padding-inline: 1rem;
+
+  &amp;[data-max-width="medium"] {
+    --wrapper-max-width: 900px;
+  }
+
+  &amp;[data-max-width="narrow"] {
+    --wrapper-max-width: 700px;
+  }
+}</code></pre>
+
+<p>
+<strong>max-width</strong> alone narrows the wrapper but leaves it left-aligned — space collects on the right. <strong>margin-inline: auto</strong> alone does nothing unless the wrapper has a reason to be narrower than its parent. Together, they do the job: the wrapper is constrained, then centered.
+</p>
+
+
+
+<br>
+
+<p><strong>The mental model</strong></p>
+
+<p>
+Each layout component owns one axis:
+</p>
+
+<pre><code>.section  → vertical space (padding-block)
+.wrapper  → horizontal space (max-width, margin, padding-inline)</code></pre>
+
+<p>
+Keeping the responsibilities split means each component stays simple. The section doesn't worry about width. The wrapper doesn't worry about vertical spacing. Together, they handle every layout need.
+</p>
+
+<br>
+
+<hr>
+
+
+
+<h3>A Note On: Centering Rules — Block vs. Inline-Block vs. Inline</h3>
+
+<p>
+The previous section showed that <strong>margin-inline: auto</strong> centers the wrapper. But this only works because the wrapper is a <strong>block element</strong>. Different element types behave differently — and the method used to center them changes accordingly.
+</p>
+
+<br>
+
+<h5>The Three Types</h5>
+
+<pre><code>┌───────────────┬────────────────┬──────────────────────────────────────┐
+│ Type          │ Default Width  │ Behavior                             │
+├───────────────┼────────────────┼──────────────────────────────────────┤
+│ Block         │ width: auto    │ Expands to fill 100% of its parent   │
+│ Inline-block  │ width: auto    │ Shrinks to fit its content           │
+│ Inline        │ width: auto    │ Shrinks to content, no width control │
+└───────────────┴────────────────┴──────────────────────────────────────┘</code></pre>
+
+<p>
+<strong>• Block</strong> — <strong>&lt;div&gt;</strong>, <strong>&lt;form&gt;</strong>, <strong>&lt;p&gt;</strong>, <strong>&lt;h1&gt;</strong>–<strong>&lt;h6&gt;</strong>, <strong>&lt;section&gt;</strong>. Expands to fill the parent's width.
+<br>
+<strong>• Inline-block</strong> — <strong>&lt;input&gt;</strong>, <strong>&lt;button&gt;</strong>, <strong>&lt;select&gt;</strong>, <strong>&lt;img&gt;</strong>. Sits inline with other elements but keeps its own width and height.
+<br>
+<strong>• Inline</strong> — <strong>&lt;span&gt;</strong>, <strong>&lt;a&gt;</strong>, <strong>&lt;strong&gt;</strong>, <strong>&lt;em&gt;</strong>. Behaves like text — width and height can't be set.
+</p>
+
+<br>
+<h4>How Each Type Is Centered</h4>
+
+<p>
+Centering depends on <strong>two</strong> things: the <strong>parent's display type</strong> and the <strong>child's display type</strong>. Different combinations require different techniques.
+</p>
+
+<br>
+
+<p><strong>Block parent → Block child</strong></p>
+<p>
+The child centers itself. Give it a width and <strong>margin-inline: auto</strong>. The parent does nothing.
+</p>
+
+<pre><code>.parent { /* nothing needed */ }
+
+.child {
+  width: 600px;
+  margin-inline: auto;
+}</code></pre>
+
+<br>
+
+<p><strong>Block parent → Inline-block child</strong></p>
+<p>
+The parent centers the child. Set <strong>text-align: center</strong> on the parent. The child does nothing.
+</p>
+
+<pre><code>.parent {
+  text-align: center;
+}
+
+.child { /* nothing needed */ }</code></pre>
+
+<br>
+
+<p><strong>Block parent → Inline child</strong></p>
+<p>
+Same as inline-block — the parent uses <strong>text-align: center</strong>.
+</p>
+
+<pre><code>.parent {
+  text-align: center;
+}</code></pre>
+
+<br>
+
+<p><strong>Inline-block parent → Any child</strong></p>
+<p>
+The parent can't center itself — it's centered by <strong>its own</strong> parent using <strong>text-align: center</strong>.
+</p>
+
+<pre><code>.grandparent {
+  text-align: center;
+}
+
+.parent { /* inline-block child — nothing needed */ }</code></pre>
+
+<br>
+
+<p><strong>The Rule:</strong></p>
+
+<pre><code>Block child       → child centers itself (margin-inline: auto + width)
+Inline-block child→ parent centers it (text-align: center)
+Inline child      → parent centers it (text-align: center)</code></pre>
+
+<br>
+
+<h5>Why This Matters</h5>
+
+<p>
+The <strong>&lt;section&gt;</strong> is a block element. The <strong>.wrapper &lt;div&gt;</strong> inside it is also a block element. So the pairing is <strong>block parent → block child</strong> — which means the child centers itself with <strong>margin-inline: auto</strong> and a width.
+</p>
+
+<p>
+That's the exact rule from above, applied to this component. Every element on the page follows the same logic — the parent's type and the child's type together decide the centering method.
+</p>
+
+
+
+
 <hr>
 
 
@@ -337,7 +520,7 @@ Card grids, galleries, dashboards, or any layout where the item count is variabl
 
 <br>
 
-<h5>Deep Dive — The Full Components</h5>
+<h3>Deep Dive — The Full Components</h3>
 
 <h4>1- .grid-equal-cols</h4>
 
@@ -536,10 +719,18 @@ Both keywords tell the grid to generate as many columns as will fit. The differe
 ┌───────────┬───────────┐
 │     1     │     2     │
 └───────────┴───────────┘
-     ↑ items stretch to fill</code></pre>
+     ↑ items spread across the full width</code></pre>
 
 <p>
 For layout components like this, <strong>auto-fit</strong> is almost always the right choice. Three cards → they spread across the width. Five cards → they spread across the width. No awkward empty space. No items bunched to the left.
+</p>
+<br>
+
+<h4>
+_ Key point: 
+</h4>
+<p class="attention">
+Additionally, the grid is DOM-driven — remove or add a card, and the remaining cards reflow automatically to fill the gap. No empty column, no manual repositioning. This is what makes it ideal for dynamic UIs: interactive dashboards, card lists where users delete items, or any layout where the number of elements changes at runtime.
 </p>
 
 <br>
@@ -631,7 +822,7 @@ Increases the minimum column size to 300px. Useful for layouts with larger cards
 &lt;div class="grid-auto-fit" data-col-size="large"&gt;...&lt;/div&gt; &lt;!-- 300px minimum --&gt;
 &lt;div class="grid-auto-fit" data-gap="no-gap"&gt;...&lt;/div&gt;     &lt;!-- no gap --&gt;</code></pre>
 
-<hr>
+
 
 
 
@@ -645,8 +836,139 @@ Increases the minimum column size to 300px. Useful for layouts with larger cards
 
 
 
+<h3>Grid Gotchas</h3>
 
-<h3>Data Attributes vs. Classes</h3>
+
+
+<p>
+A grid has two levels of control: the layout of the cards themselves, and the layout of the content inside each card. Confusing the two leads to CSS that looks correct but behaves unexpectedly. These are the distinctions worth knowing.
+</p>
+<br>
+<p>
+Imagine two cards in a grid: one with an image, one with text only. Let's see what controls the layout — and where the confusion begins.
+</p>
+
+<br>
+
+
+<h4>1. The Grid Controls the Cards — Not Their Content</h4>
+
+<p>
+The grid is responsible for placing the cards and deciding how they sit relative to each other. It does not control what's inside them. Two cards in a grid stand side by side because the grid places them that way — the content inside each card has no say in it.
+</p>
+
+<pre><code>.grid-equal-cols {
+  display: grid;
+  gap: 2rem;
+
+  @media (width > 760px) {
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+  }
+}</code></pre>
+
+<pre><code>┌─────────────┬─────────────┐
+│   Card 1    │   Card 2    │
+└─────────────┴─────────────┘
+      ↑ grid places them side by side</code></pre>
+
+<br>
+
+<h5>Aligning Cards When One Is Shorter — (align-items: center vs. stretch)</h5>
+
+<p>
+Now imagine Card 1 holds an image and Card 2 holds only text. The text is short — Card 2's natural height is smaller than Card 1's. What happens to Card 2? Where does it sit within the row? Two options control this: <strong>stretch</strong> or <strong>center</strong>.
+</p>
+
+<pre><code>/* Option A — Card 2 stretches to fill the row height */
+.grid-equal-cols {
+  align-items: stretch;   /* default behavior */
+}
+
+/* Option B — Card 2 stays at its natural height, centered */
+.grid-equal-cols {
+  align-items: center;
+}</code></pre>
+
+<pre><code>/* align-items: stretch */          /* align-items: center */
+┌─────────────┬─────────────┐        ┌─────────────┬─────────────┐
+│   Card 1    │             │        │   Card 1    │             │
+│   (tall)    │   Card 2    │        │   (tall)    │    Card 2   │
+│             │   (stretch) │        │             │  (centered) │
+│             │             │        │             │             │
+└─────────────┴─────────────┘        └─────────────┴─────────────┘</code></pre>
+
+<br>
+
+<h5>The height: 100% trap</h5>
+
+<p>
+A common instinct is to give Card 2 <strong>height: 100%</strong> so it fills the full height of the row. This rarely works.
+</p>
+
+<p class="attention">
+<strong>height: 100%</strong> only works when the parent has an explicit height. A grid cell does not — its height is decided by the tallest item inside it.
+</p>
+
+<pre><code>/* ❌ Fragile — parent has no fixed height */
+.card {
+  height: 100%;
+}
+
+/* ✅ Reliable — uses the grid's default stretch behavior */
+.grid-equal-cols {
+  align-items: stretch;
+}</code></pre>
+
+
+
+
+<br>
+<h4>2. The Card Controls Its Own Content</h4>
+
+<p>
+The grid places the cards. The card arranges what's inside it. The two levels are independent — the grid never reaches inside a card, and a card never affects where it sits in the grid.
+</p>
+
+<p>
+To control the layout inside a card, the most common tool is <strong>flexbox</strong>. Since the site uses reusable components, the same pattern applies: one flex component, adjusted with data attributes.
+</p>
+
+<pre><code>.flex-col {
+  --flex-col-gap: 1rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-col-gap);
+}
+
+.flex-col[data-align="center"] {
+  align-items: center;
+}
+
+.flex-col[data-justify="center"] {
+  justify-content: center;
+}</code></pre>
+
+<pre><code>┌─────────────────┐
+│   [ image ]     │
+│                 │
+│   Heading       │
+│                 │
+│   Paragraph     │
+│   text here     │
+└─────────────────┘
+   ↑ card controls its own content</code></pre>
+
+<br>
+
+
+
+
+<hr>
+
+
+<h3>A note on: Data Attributes vs. Classes</h3>
 
 <p>
 When a component needs a variation — a narrower width, a larger gap, a different padding — there's more than one way to apply it. The two most common are <strong>modifier classes</strong> and <strong>data attributes</strong>. Both work. Both are used in production. But they behave differently in ways that matter as a project grows.
@@ -687,23 +1009,15 @@ When a component needs a variation — a narrower width, a larger gap, a differe
 <p><strong>Cons — and they're significant:</strong></p>
 
 <p>
-<strong>• Class order matters, and the order is invisible.</strong> CSS specificity is not always about the order in the stylesheet — but modifier classes depend on it. If <strong>.wrapper--narrow</strong> is defined <em>above</em> <strong>.wrapper</strong> in the CSS file, the base class wins — and the modifier silently does nothing. The HTML looks correct. The CSS looks correct. But the variation never applies. Debugging this wastes hours.
+<strong>• Class order decides the outcome — a CSS specificity problem.</strong> CSS modifier classes depend on the order they're declared in the stylesheet. If <strong>.wrapper--narrow</strong> is defined above <strong>.wrapper</strong>, the base class wins — and the modifier silently does nothing. When two modifiers are used together, the same order decides which one wins. As more modifiers are added, the rules start fighting each other, and developers reach for <strong>!important</strong> or deeper selectors to force a winner. The HTML looks correct. The CSS looks correct. But the behavior is unpredictable.
 </p>
 
 <p>
-<strong>• Specificity battles begin.</strong> When two modifier classes are used together — say <strong>.wrapper--narrow</strong> and <strong>.wrapper--padding-none</strong> — the order they're declared in the CSS file decides which one wins. As more modifiers are added, the rules start fighting each other. Developers reach for <strong>!important</strong> or deeper selectors to force a winner — and the CSS becomes fragile.
-</p>
-
-<p>
-<strong>• The HTML gets noisy.</strong> A component with two variations carries three classes: <strong>wrapper wrapper--narrow wrapper--padding-none</strong>. Every additional variation adds another class. The base class is buried.
+<strong>• The HTML gets noisy and hard to scan.</strong> A component with two variations carries three classes: <strong>wrapper wrapper--narrow wrapper--padding-none</strong>. The base class is buried, and there's no clean way to see the settings at a glance — classes blend together visually.
 </p>
 
 <p>
 <strong>• Naming drifts.</strong> Is it <strong>wrapper--narrow</strong> or <strong>wrapper--small</strong>? <strong>wrapper--tight</strong> or <strong>wrapper--compact</strong>? Every team invents its own conventions, and every project invents different ones. The HTML becomes harder to scan over time.
-</p>
-
-<p>
-<strong>• Hard to tell what's applied.</strong> Looking at <strong>class="wrapper wrapper--narrow wrapper--padding-none"</strong>, there's no clean way to see the settings at a glance. Classes blend together visually in the markup.
 </p>
 
 <br>
@@ -760,7 +1074,7 @@ When a component needs a variation — a narrower width, a larger gap, a differe
 
 <br>
 
-<h4>Side-by-Side Comparison</h4>
+<h5>Side-by-Side Comparison</h5>
 
 <pre><code>┌──────────────────────┬────────────────────────────────┬────────────────────────────────┐
 │                      │ Modifier Classes               │ Data Attributes                │
@@ -775,7 +1089,7 @@ When a component needs a variation — a narrower width, a larger gap, a differe
 
 <br>
 
-<h4>Why This Page Uses Data Attributes</h4>
+<h5>Why This Page Uses Data Attributes</h5>
 
 <p>
 The data attribute pattern treats variations as <strong>settings</strong>, not new components. A wrapper with <strong>data-width="narrow"</strong> is still the wrapper — just configured differently. The base class never changes, so the component stays the same. Only the attribute changes.
@@ -791,6 +1105,44 @@ Modifier classes work — for small projects. But as the number of variations gr
 
 <br>
 
+
+<br>
+
+<h4>— Worth Knowing: (AND vs. OR in Attribute Selectors)</h4>
+<h4></h4>
+
+<p>
+When multiple data attributes are involved, the way they're combined changes what the CSS matches.
+</p>
+
+<br>
+
+<p><strong>OR — comma-separated</strong></p>
+
+<pre><code>&amp;[data-padding-block="large"],
+&amp;[data-padding-block="x-large"] {
+  /* OR — applies when either attribute is present */
+}</code></pre>
+
+<p>
+The comma means "or." The styles apply when <strong>either</strong> attribute is present.
+</p>
+
+<br>
+
+
+<p><strong>AND — chained selectors</strong></p>
+
+<pre><code>&amp;[data-padding-block="large"][data-width="narrow"] {
+  /* AND — applies only when BOTH are present */
+}</code></pre>
+
+<p>
+No comma, no space. The styles apply only when <strong>both</strong> attributes exist on the same element.
+</p>
+
+<br>
+
 <h4>The Rule</h4>
 
 <p>
@@ -801,10 +1153,13 @@ Modifier classes work — for small projects. But as the number of variations gr
 data-width="narrow"            → configured as narrow
 data-padding-inline="none"     → configured without side padding</code></pre>
 
-<br>
+
+
 
 <hr>
-<h3>The JavaScript Side</h3>
+
+
+<h3>Beyond CSS: The JavaScript Side</h3>
 
 <p>
 Data attributes aren't just for CSS. They're also useful selectors in JavaScript — and often a better choice than classes for interactive elements.
@@ -893,10 +1248,10 @@ A cleaner approach: attach <strong>one listener</strong> to the grid — the par
 
 <pre><code>┌─────────────────────────────┐
 │  grid (listener here)       │
-│  ┌─────────┐  ┌─────────┐  │
-│  │  card   │  │  card   │  │
-│  │  [🗑️]  │  │  [🗑️]  │  │ ← click lands here
-│  └─────────┘  └─────────┘  │
+│  ┌─────────┐  ┌─────────┐   │
+│  │  card   │  │  card   │   │
+│  │  [🗑️]   │  │  [🗑️]   │  ← click lands here
+│  └─────────┘  └─────────┘   │
 │         ↑                   │
 │    bubbles up to grid       │
 └─────────────────────────────┘</code></pre>

@@ -36,7 +36,7 @@ const form = () => {
 ├── The Architectural Question: How Does the Child Notify the Parent?
 ├── The First Attempt — And Why It Failed (Circular Dependency)
 ├── Method 1: Callback Function (Props Drilling in React)
-│   └── Two Mistakes I Made Along the Way
+│   └── One Mistake — And One Thing I Didn't Realize
 │       ├── Shadowing the Global State
 │       └── Closure Was at Work
 ├── Method 2: Custom Events (Event-Based)
@@ -232,50 +232,37 @@ The parent passes a function to the child as a parameter. The child stores it. W
 </p>
 
 <pre><code>const root = document.getElementById("root");
-let formType = "login";
 
-// Children receive a callback and use it
+// Children receive the callback and use it.
+
+// ─── CHILD 1: Login form ──────────────────────────
 const createLogin = (onSwitch) => {
   const form = document.createElement("form");
   form.className = "form";
-  form.innerHTML = \`
-    <h2>Login Page</h2>
-    <label>Email</label>
-    <input type="email"/>
-    <label>Password</label>
-    <input type="password"/>
-    <p>Don't have an account? 
-      <button class="signup-link">Sign Up</button>
-    </p>
-  \`;
+  form.innerHTML = \`...login form HTML...\`;
+
   form.querySelector(".signup-link").addEventListener("click", () => {
     onSwitch("signup");
   });
   root.append(form);
 };
 
+// ─── CHILD 2: Signup form ─────────────────────────
 const createSignup = (onSwitch) => {
   const form = document.createElement("form");
   form.className = "form";
-  form.innerHTML = \`
-    <h2>Sign Up Page</h2>
-    <label>Full Name</label>
-    <input type="text"/>
-    <label>Email</label>
-    <input type="email"/>
-    <label>Password</label>
-    <input type="password"/>
-    <p>Already have an account? 
-      <button class="login-link">Log In</button>
-    </p>
-  \`;
+  form.innerHTML = \`...signup form HTML...\`;
+
   form.querySelector(".login-link").addEventListener("click", () => {
     onSwitch("login");
   });
   root.append(form);
 };
 
-// Parent owns state and creates the callback
+// ─── PARENT: owns state, creates the callback ─────
+
+let formType = "login";
+
 const auth = () => {
   root.innerHTML = "";
   const handleSwitch = (type) => {
@@ -286,15 +273,20 @@ const auth = () => {
   else if (formType === "signup") createSignup(handleSwitch);
 };</code></pre>
 
-
-<h4>Two Mistakes I Made Along the Way</h4>
-
-<p>
-Before the callback pattern clicked, I ran into two subtle bugs that taught me more than the working code ever did.
+<p class="attention">
+Notice handleSwitch lives inside auth here. That's fine — and the code works, because formType is declared outside auth, so it survives every re-render. But handleSwitch itself can also live at the top level, right next to the state. That version is slightly cleaner — we'll see it below.
 </p>
 
+
+<h4>One Mistake I Made — And One Thing I Didn't Realize Was Happening</h4>
+
 <p>
-<strong>First mistake: I shadowed the global state.</strong> I named the callback parameter the same as the global <strong>formType</strong> variable:
+Before the callback pattern clicked, I ran into one real bug — and one thing about the code that I hadn't noticed was happening at all. Together, they taught me more than the working code ever did.
+</p>
+<br>
+<h5>1. The mistake:</h5>
+<p>
+<strong>I shadowed the global state.</strong> I named the callback parameter the same as the global <strong>formType</strong> variable:
 </p>
 
 <pre><code>let formType = "login";  // global state
@@ -340,22 +332,149 @@ Now there are <em>two</em> variables named <strong>formType</strong>: one in the
 
 <br>
 
+<h5>2. The Thing I Didn't Realize Was Happening</h5>
 <p>
-<strong>Second mistake: I didn't realize closure was at work.</strong> The arrow function inside <strong>addEventListener</strong> closes over <strong>onSwitch</strong>. Even after <strong>createLogin</strong> finishes running and returns, that little arrow function still holds onto <strong>onSwitch</strong> in its backpack. When the user clicks the button days later, it still works — because <strong>closure never forgot.</strong>
+<strong>Not a mistake — but something I hadn't noticed: closure was at work.</strong> The arrow function inside <strong>addEventListener</strong> closes over <strong>onSwitch</strong>. Even after <strong>createLogin</strong> finishes running and returns, that little arrow function still holds onto <strong>onSwitch</strong> in its backpack. When the user clicks the button, it still works — because <strong>closure never forgot.</strong>
 </p>
 
+
+<br>
+
+<h5>
+Another option: hoist handleSwitch out of auth
+</h5>
 <p>
-That moment — watching <strong>onSwitch</strong> survive long after <strong>createLogin</strong> had finished — was the exact moment I knew I had to understand closure deeply. Not just memorize a definition. Not just nod along to a tutorial. I needed to trace it through the callstack, through local memory, through the invisible backpack, until I could <em>see</em> it.
+keep <strong>handleSwitch</strong> at the top level with the state — no closure needed, the child just calls it directly.
 </p>
+
+<pre><code>let formType = "login";
+
+const handleSwitch = (type) => {
+  formType = type;
+  auth();
+};
+
+const auth = () => {
+  root.innerHTML = "";
+  if (formType === "login") createLogin(handleSwitch);
+  else if (formType === "signup") createSignup(handleSwitch);
+};</code></pre>
+
+
+
+<br>
 
 <p>
 So I built an entire page dedicated to it — walking through the machinery of JavaScript, step by patient step, until closure revealed itself. If you want to solidify your understanding — to go from <em>"I've heard of closure"</em> to <em>"I can trace it with my eyes closed"</em> — you can find it in link below or just head back. You'll find it tucked inside the JavaScript section.
+</p>
+<p>
+Shadowing taught me to be careful. Closure taught me to be curious.
 </p>
 
 <br>
 <p>
 <a class="accent-link" href="#/javascript/closure">→ The Closure Deep Dive: Walking through the callstack, local memory, and the scope chain — until the backpack reveals itself.</a>
 </p>
+
+
+<br>
+<h4>Cleaner: let the parent own the container</h4>
+
+<p>
+In the version above, each child creates its own <strong>form</strong> and appends it to <strong>root</strong>. But that means the child knows about <code>root</code> — and every child has to repeat the same create-and-append dance.
+</p>
+
+<p>
+We can move that responsibility up. The parent creates the container, appends it, and passes it down. The child only fills it in and returns it. Now children don't know <code>root</code> exists — they're purely presentational.
+</p>
+
+<pre><code>const createLogin = (switchForm, form) => {
+  form.innerHTML = \`
+    ...
+  \`;
+
+  form.querySelector(".signup-link").addEventListener("click", () => {
+    switchForm("signup");
+  });
+
+  return form;
+};
+
+const auth = () => {
+  root.innerHTML = "";
+
+  const form = document.createElement("form");
+  form.className = "form-container";
+
+  const switchForm = (type) => {
+    formType = type;
+    auth();
+  };
+
+  if (formType === "login") {
+    root.append(createLogin(switchForm, form));
+  } else if (formType === "signup") {
+    root.append(createSignup(switchForm, form));
+  }
+};</code></pre>
+
+<p class="attention">
+Note: The form itself can also live at the top level (global scope) — created once, reused every render.
+</p>
+
+<p>
+<strong>The rule:</strong> Parent owns the skeleton. Children paint inside it.
+</p>
+
+<br>
+
+<h5>Append once, at the end</h5>
+<p>
+We can even move <strong>root.append</strong> out of the branches — the parent decides which child to run, then appends the form once at the end:
+</p>
+
+<pre><code>const auth = () => {
+  ...
+
+  if (formType === "login") {
+    createLogin(switchForm, form);
+  } else if (formType === "signup") {
+    createSignup(switchForm, form);
+  }
+
+  root.append(form);
+};</code></pre>
+<br>
+<p>
+<strong>The flow — parent hands form, child fills it:</strong>
+</p>
+<br>
+<p>
+<strong>1.</strong> The parent creates an empty form container.
+<br>
+<strong>2.</strong> The parent decides which child should render based on the current state.
+<br>
+<strong>3.</strong> The parent passes the empty form down to that child.
+<br>
+<strong>4.</strong> The child fills the form with its own HTML — labels, inputs, buttons.
+<br>
+<strong>5.</strong> The child wires up its own event listeners.
+<br>
+<strong>6.</strong> The child returns the filled form back to the parent.
+<br>
+<strong>7.</strong> The parent appends the finished form to the container — once, at the end.
+</p>
+<br>
+<p>
+This pattern scales. In a large project, the same flow repeats at every level: the parent owns the container and decides what to render. Each child owns its own markup, its own events, and its own logic. The parent never reaches inside a child, and the child never reaches outside itself. Each layer stays responsible for its own piece.
+</p>
+
+
+<br>
+<p>
+<a class="accent-link" href="#/projects/multi-steps-form">→ Used this exact structure in my multi-step form project</a>
+</p>
+
 
 <hr>
 
@@ -753,9 +872,8 @@ Now when I use React, Vue, or Svelte, I don't just use their patterns. I see the
 <hr>
 
 <p>
-<em>See the full working code on <a href="https://github.com/falconstoop" target="_blank" rel="noopener noreferrer">GitHub →</a></em>
+<em>See the full working code on <a class="accent-link" href="https://github.com/falconstoop/form-patterns" target="_blank" rel="noopener noreferrer">GitHub → Single view form</a></em>
 </p>
-
 
 
 
